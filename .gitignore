@@ -57,3 +57,9 @@ sysinfo.txt
  
 # Crashlytics generated file
 crashlytics-build.properties
+
+# Ignore IDEA settings
+.idea
+
+# Ignore macOS folder file
+.DS_Store
