@@ -199,3 +199,42 @@
     The bartender at the beginning of the game isn't exactly a friend, but its the best Vira's got. We don't see him for long.
 
 ---
+
+### 8. Levels
+**8.1. Training Level**
+
+    To train the player on their ability to punch high and kick low, the starting room will make the player break through a wooden board with a high punch and a low kick.
+    This establishes the way of the road for the game and prepares them to hit small enemies with a kick and large enemies with a punch.
+
+**8.2. Each Level**
+
+    There will be 3-4 levels, with their style reflecting the areas described in 6.2. Each will serve to introduce a new enemy or world attribute.
+    This increase in complexity will also see an increase in difficulty.
+
+---
+
+### 9. Interface
+**9.1. Visual System**
+
+    The HUD will contain the players health bar, as well as their combo gauge. The combo gauge will levels shown to the player that establish when a new upgrade level is achieved.
+    This upgrades will be put into larger icons when earned so the player has feedback when they recieve it.
+    Enemies will have a small health bar above their head when damaged to show their current health level.
+    The camera in most cases scrolls with the character.
+
+**9.2. Control System**
+
+    The player controls the game through a mouse and keyboard. There's potential for controller support as well.
+
+**9.3. Audio, Music, Sound Effects**
+
+    TBD.
+
+**9.4. Game Art Style**
+
+    Fantasy style HUD and menus. Built of iron with magic fill effects.
+
+**9.5. Help System**
+
+    N/A.
+
+---
