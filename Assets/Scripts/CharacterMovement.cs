@@ -30,11 +30,16 @@ public class CharacterMovement : MonoBehaviour
     public void Move(Vector2 moveDirection)
     {
         if (!canMove) return;
-        
-        var targetDirection = new Vector3(moveDirection.x, 0, moveDirection.y).normalized;
-        var targetVelocity = new Vector3(targetDirection.x * hSpeed, targetDirection.y, targetDirection.z * vSpeed);
-        _rigidbody.velocity = Vector3.SmoothDamp(_rigidbody.velocity, targetVelocity, ref _velocity, moveSmoothing);
 
+        moveDirection = moveDirection.normalized;
+        var targetVelocity = Vector3.zero;
+        targetVelocity.x = moveDirection.x * hSpeed;
+        targetVelocity.y = _rigidbody.velocity.y;
+        targetVelocity.z = moveDirection.y * vSpeed;
+        
+        // TODO: reimplement movement speed dampening
+        
+        _rigidbody.velocity = targetVelocity;
         switch (moveDirection.x)
         {
             case > 0 when !_facingRight:

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028305, g: 0.22571313, b: 0.3069213, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -931,6 +931,7 @@ GameObject:
   - component: {fileID: 1177575286}
   - component: {fileID: 1177575285}
   - component: {fileID: 1177575284}
+  - component: {fileID: 1177575289}
   - component: {fileID: 1177575283}
   - component: {fileID: 1177575282}
   - component: {fileID: 1177575281}
@@ -992,7 +993,7 @@ Rigidbody:
   serializedVersion: 2
   m_Mass: 1
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
@@ -1009,8 +1010,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 2.64, y: 5.099186, z: 0.2}
-  m_Center: {x: 0, y: 2.630409, z: 0}
+  m_Size: {x: 2.64, y: 4.4615865, z: 0.2}
+  m_Center: {x: 0, y: 2.9492087, z: 0}
 --- !u!212 &1177575285
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1105,6 +1106,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 3
   armorMultiplier: 0
+--- !u!136 &1177575289
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1177575280}
+  m_Material: {fileID: 13400000, guid: 295f9697019b2b24e96291e33ef8cade, type: 2}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.23
+  m_Height: 2.81
+  m_Direction: 0
+  m_Center: {x: 0, y: 0.59, z: 0}
 --- !u!1 &1188549354
 GameObject:
   m_ObjectHideFlags: 0
