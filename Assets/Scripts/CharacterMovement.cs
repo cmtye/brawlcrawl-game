@@ -10,7 +10,7 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] private GameObject attackColliders;
     [SerializeField] private float hSpeed = 10f;
     [SerializeField] private float vSpeed = 6f;
-    [SerializeField] private bool canMove;
+    public bool canMove;
     
     private SpriteRenderer _spriteRenderer;
     private Rigidbody _rigidbody;
@@ -51,9 +51,6 @@ public class CharacterMovement : MonoBehaviour
         _spriteRenderer.flipX = !_spriteRenderer.flipX;
 
         // If attack colliders are set, rotate them along with the sprite.
-        if (attackColliders)
-        {
-            attackColliders.transform.Rotate(0, 180, 0);
-        }
+        if (attackColliders) attackColliders.transform.Rotate(0, 180, 0);
     }
 }

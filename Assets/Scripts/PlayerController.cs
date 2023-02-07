@@ -14,10 +14,13 @@ public class PlayerController : MonoBehaviour
     private CharacterMovement _movementScript;
     private Vector2 _moveDirection = Vector2.zero;
 
+    private HealthBehavior _healthBehavior;
+
     [SerializeField] private float attackRate = 2f;
     [SerializeField] private float attackRange = 0.5f;
+    [SerializeField] private float attackDamage = 2f;
     private float _actionDelay;
-    
+
     [SerializeField] private Transform punchBack;
     [SerializeField] private Transform punchFront;
     [SerializeField] private Transform kickBack;
@@ -30,6 +33,7 @@ public class PlayerController : MonoBehaviour
     {
         _playerControls = new PlayerInputActions();
         _movementScript = GetComponent<CharacterMovement>();
+        _healthBehavior = GetComponent<HealthBehavior>();
     }
     private void OnEnable()
     {
@@ -57,14 +61,15 @@ public class PlayerController : MonoBehaviour
     private void Punch()
     {
         if (!(Time.time >= _actionDelay)) return;
-        
+
         // Create capsule collider instead of sphere for better feeling hit registration.
         var overlaps = Physics.OverlapCapsuleNonAlloc(punchBack.position, 
             punchFront.position, attackRange, _hitColliders, enemyLayers);
-        // Iterate through pre-allocated array of overlapping enemies. Saves GC time.
+        // Iterate through pre-allocated array of overlapping enemies. Saves garbage collection time.
         for (var i = 0; i < overlaps; i++)
         {
             Debug.Log("Punched " + _hitColliders[i]);
+            _hitColliders[i].GetComponent<HealthBehavior>().TakeDamage(attackDamage);
         }
         _actionDelay = Time.time + 1f / attackRate;
     }
@@ -77,6 +82,7 @@ public class PlayerController : MonoBehaviour
         for (var i = 0; i < overlaps; i++)
         {
             Debug.Log("Kicked " + _hitColliders[i]);
+            _hitColliders[i].GetComponent<HealthBehavior>().TakeDamage(attackDamage);
         }
         _actionDelay = Time.time + 1f / attackRate;
     }
@@ -111,5 +117,13 @@ public class PlayerController : MonoBehaviour
         Gizmos.DrawWireSphere(punchFront.position, attackRange);
         Gizmos.DrawWireSphere(kickBack.position, attackRange);
         Gizmos.DrawWireSphere(kickFront.position, attackRange);
+    }
+
+    private void OnTriggerEnter(Collider trigger)
+    {
+        if (trigger.gameObject.CompareTag("Enemy"))
+        {
+            _healthBehavior.TakeDamage(1f);
+        }
     }
 }
