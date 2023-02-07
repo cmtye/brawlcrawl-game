@@ -19,11 +19,11 @@ public class CharacterMovement : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
     }
 
-    public void Move(float hMove, float vMove)
+    public void Move(Vector2 moveDirection)
     {
         if (!canMove) return;
         
-        var targetDirection = new Vector3(hMove, 0, vMove);
+        var targetDirection = new Vector3(moveDirection.x, 0, moveDirection.y);
         if (targetDirection.magnitude > 1) targetDirection = targetDirection.normalized;
 
         var targetVelocity = new Vector3(targetDirection.x * hSpeed, targetDirection.y, targetDirection.z * vSpeed);

@@ -2,28 +2,43 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private CharacterMovement movementScript;
-    private float _hMove;
-    private float _vMove;
+    private CharacterMovement _movementScript;
     
-    // Start is called before the first frame update
+    private PlayerInputActions _playerControls;
+    private InputAction _move;
+    private InputAction _fire;
+    
+    private Vector2 _moveDirection = Vector2.zero;
+
     private void Awake()
     {
-        movementScript = GetComponent<CharacterMovement>();
+        _playerControls = new PlayerInputActions();
+        _movementScript = GetComponent<CharacterMovement>();
+    }
+    private void OnEnable()
+    {
+        _move = _playerControls.Player.Move;
+        _move.Enable();
+    }
+
+    private void OnDisable()
+    {
+        _move.Disable();
     }
 
     // Update is called once per frame
     private void Update()
     {
-        _hMove = Input.GetAxis("Horizontal");
-        _vMove = Input.GetAxis("Vertical");
+        _moveDirection = _move.ReadValue<Vector2>();
     }
 
     private void FixedUpdate()
     {
-        movementScript.Move(_hMove, _vMove);
+        _movementScript.Move(_moveDirection);
     }
 }
