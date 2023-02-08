@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ComboGaugeController : MonoBehaviour
+public class GaugeUIController : MonoBehaviour
 {
     [SerializeField] private GameObject radialFillObject;
     private Image _fill;
@@ -19,14 +19,14 @@ public class ComboGaugeController : MonoBehaviour
         }
     }
 
-    public void UpdateGauge(float value)
+    public void UpdateGauge(int value)
     {
         if (!_isShaking)
         {
             StartCoroutine(Shake(0.1f, 10f));
         }
         _fill.color = Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
-        _fill.fillAmount = value;
+        _fill.fillAmount = Mathf.Clamp(value/100f, 0f, 1f);
         
     }
 

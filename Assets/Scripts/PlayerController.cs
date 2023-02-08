@@ -29,6 +29,8 @@ public class PlayerController : MonoBehaviour
     private Transform _punchFront;
     private Transform _kickBack;
     private Transform _kickFront;
+
+    [SerializeField] private List<int> abilityThresholds;
     
     // Collision variables for attacks landing on an enemy/object. Pre-allocation saves garbage collecting time later.
     [SerializeField] private LayerMask attackableLayers;
@@ -79,13 +81,9 @@ public class PlayerController : MonoBehaviour
         
         // Increment combo if you hit an enemy.
         if (overlaps >= 1) GameManager.instance.IncrementCombo();
+        // Iterate through array of enemies the attack overlapped with in method below.
+        DamageCollided(_hitColliders, overlaps, attackDamage);
         
-        // Iterate through array of enemies the attack overlapped with.
-        for (var i = 0; i < overlaps; i++)
-        {
-            Debug.Log("Punched " + _hitColliders[i]);
-            _hitColliders[i].GetComponent<HealthBehavior>().TakeDamage(attackDamage);
-        }
         _actionDelay = Time.time + 1f / attackRate;
     }
     private void Kick()
@@ -95,11 +93,8 @@ public class PlayerController : MonoBehaviour
         var overlaps = Physics.OverlapCapsuleNonAlloc(_kickBack.position,
             _kickFront.position, attackRange, _hitColliders, attackableLayers);
         if (overlaps >= 1) GameManager.instance.IncrementCombo();
-        for (var i = 0; i < overlaps; i++)
-        {
-            Debug.Log("Kicked " + _hitColliders[i]);
-            _hitColliders[i].GetComponent<HealthBehavior>().TakeDamage(attackDamage);
-        }
+        DamageCollided(_hitColliders, overlaps, attackDamage);
+        
         _actionDelay = Time.time + 1f / attackRate;
     }
     private void Counter()
@@ -114,15 +109,62 @@ public class PlayerController : MonoBehaviour
     private void Ability()
     {
         if (!(Time.time >= _actionDelay)) return;
-        
-        // Ability resets combo temporarily for testing.
-        GameManager.instance.ResetCombo();
-        Debug.Log("Ability");
-        
+
+        var currentCombo = GameManager.instance.GetCombo();
+        int overlaps;
+        switch (currentCombo)
+        {
+            case var _ when currentCombo >= abilityThresholds[2]:
+                // Gauge is at or past last threshold but not above
+                currentCombo -= abilityThresholds[2];
+                GameManager.instance.SetCombo(currentCombo);
+                Debug.Log("Level 3");
+                
+                // Hard coded spherical explosion, may change or iterate on.
+                overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 8,
+                    _hitColliders, attackableLayers);
+                DamageCollided(_hitColliders, overlaps, attackDamage * 8);
+                break;
+            
+            case var _ when currentCombo >= abilityThresholds[1]:
+                // Gauge is at or past second threshold but not above
+                currentCombo -= abilityThresholds[1];
+                GameManager.instance.SetCombo(currentCombo);
+                Debug.Log("Level 2");
+                
+                overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 4,
+                    _hitColliders, attackableLayers);
+                DamageCollided(_hitColliders, overlaps, attackDamage * 4);
+                break;
+            
+            case var _ when currentCombo >= abilityThresholds[0]:
+                // Gauge is at or past first threshold but not above
+                currentCombo -= abilityThresholds[0];
+                GameManager.instance.SetCombo(currentCombo);
+                Debug.Log("Level 1");
+                
+                overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 2,
+                    _hitColliders, attackableLayers);
+                DamageCollided(_hitColliders, overlaps, attackDamage * 2);
+                break;
+            
+            default:
+                Debug.Log("None");
+                // Gauge isn't high enough
+                break;
+        }
+
         // TODO: alter the timing for flow
         _actionDelay = Time.time + 1f / attackRate;
     }
-    
+
+    private void DamageCollided(Collider[] hit, int amountHit, float damage)
+    {
+        for (var i = 0; i < amountHit; i++)
+        {
+            hit[i].GetComponent<HealthBehavior>().TakeDamage(damage);
+        }
+    }
     // Allows the transforms of attack points to be shown in the editor for designers. Debug only.
     private void OnDrawGizmosSelected()
     {

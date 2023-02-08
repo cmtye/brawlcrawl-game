@@ -25,6 +25,16 @@ public class HealthBehavior : MonoBehaviour
             Die();
         }
     }
+
+    public float GetHealth()
+    {
+        return _currentHealth;
+    }
+    
+    public float GetMaxHealth()
+    {
+        return maxHealth;
+    }
     public void GainHealth(float healing)
     {
         _currentHealth += healing;

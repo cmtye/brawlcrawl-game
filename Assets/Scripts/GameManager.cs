@@ -8,18 +8,18 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
 
     [SerializeField] private GameObject gaugeUI;
-    [SerializeField] private float currentCombo;
-    [SerializeField] private float comboIncrement;
-    private ComboGaugeController _gauge;
+    [SerializeField] private int currentCombo;
+    [SerializeField] private int comboIncrement;
+    private GaugeUIController _gaugeUI;
 
     private void Awake()
     {
         instance = this;
-        currentCombo = 0f;
-        if (gaugeUI) _gauge = gaugeUI.GetComponent<ComboGaugeController>();
+        currentCombo = 0;
+        if (gaugeUI) _gaugeUI = gaugeUI.GetComponent<GaugeUIController>();
     }
 
-    public float GetCombo()
+    public int GetCombo()
     {
         return currentCombo;
     }
@@ -27,14 +27,22 @@ public class GameManager : MonoBehaviour
     public void IncrementCombo()
     {
         currentCombo += comboIncrement;
-        if (currentCombo > 1f) currentCombo = 1f;
-        _gauge.UpdateGauge(currentCombo);
+        if (currentCombo > 100) currentCombo = 100;
+        _gaugeUI.UpdateGauge(currentCombo);
+
+    }
+    
+    public void SetCombo(int value)
+    {
+        currentCombo = value;
+        if (currentCombo > 100) currentCombo = 100;
+        _gaugeUI.UpdateGauge(currentCombo);
 
     }
 
     public void ResetCombo()
     {
         currentCombo = 0;
-        _gauge.UpdateGauge(currentCombo);
+        _gaugeUI.UpdateGauge(currentCombo);
     }
 }
