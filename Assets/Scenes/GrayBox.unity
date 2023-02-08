@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 88760776}
   - component: {fileID: 88760775}
   m_Layer: 5
-  m_Name: Gauge Canvas
+  m_Name: GaugeCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -230,7 +230,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 91713688}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.35, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -299,14 +299,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 160314552}
-  m_LocalRotation: {x: -0, y: -0.26956186, z: -0, w: 0.96298313}
-  m_LocalPosition: {x: 22.651, y: 9.21, z: -2.845}
+  m_LocalRotation: {x: -0, y: -0.25617492, z: -0, w: 0.9666304}
+  m_LocalPosition: {x: 22.559, y: 9.21, z: -2.612}
   m_LocalScale: {x: 0.084136, y: 0.52413, z: 2.0195}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 103657672}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: -31.276, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -29.686, z: 0}
 --- !u!114 &160314554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -429,7 +429,7 @@ GameObject:
   - component: {fileID: 357020910}
   - component: {fileID: 357020909}
   m_Layer: 5
-  m_Name: Ring Fill
+  m_Name: RingFill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -586,7 +586,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!114 &434898228
 MonoBehaviour:
@@ -827,7 +827,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 782638066}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.35, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1127,6 +1127,53 @@ Transform:
   m_Father: {fileID: 1331488856}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1120670209
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1120670211}
+  - component: {fileID: 1120670210}
+  m_Layer: 0
+  m_Name: Game Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1120670210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1120670209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dee6c5dd20c6922488a148dd8d505120, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gaugeUI: {fileID: 1178577651}
+  currentCombo: 0
+  comboIncrement: 0.1
+--- !u!4 &1120670211
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1120670209}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 7.29963, y: -3.3356056, z: -9.578112}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1168318109
 GameObject:
   m_ObjectHideFlags: 0
@@ -1237,10 +1284,10 @@ GameObject:
   - component: {fileID: 1177575284}
   - component: {fileID: 1177575289}
   - component: {fileID: 1177575283}
-  - component: {fileID: 1177575282}
   - component: {fileID: 1177575281}
-  - component: {fileID: 1177575287}
   - component: {fileID: 1177575288}
+  - component: {fileID: 1177575282}
+  - component: {fileID: 1177575287}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1260,15 +1307,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5f6de92fd7340c478e7111bf5bd8c27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GaugeUI: {fileID: 1178577651}
   attackRate: 2
-  attackRange: 0.4
+  attackRange: 0.45
   attackDamage: 2
-  punchBack: {fileID: 1692747647}
-  punchFront: {fileID: 1188549355}
-  kickBack: {fileID: 1758579969}
-  kickFront: {fileID: 1335092359}
-  enemyLayers:
+  punchPoints:
+  - {fileID: 1692747647}
+  - {fileID: 1188549355}
+  kickPoints:
+  - {fileID: 1758579969}
+  - {fileID: 1335092359}
+  attackableLayers:
     serializedVersion: 2
     m_Bits: 192
 --- !u!114 &1177575282
@@ -1383,7 +1431,7 @@ Transform:
   m_Children:
   - {fileID: 189876655}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1177575287
 MonoBehaviour:
@@ -1438,7 +1486,7 @@ GameObject:
   - component: {fileID: 1178577654}
   - component: {fileID: 1178577653}
   m_Layer: 5
-  m_Name: Combo Gauge
+  m_Name: ComboGauge
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1478,7 +1526,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   radialFillObject: {fileID: 357020907}
-  additionPercentage: 10
 --- !u!114 &1178577654
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1586,7 +1633,7 @@ Transform:
   - {fileID: 971713162}
   - {fileID: 898418822}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1335092358
 GameObject:
@@ -1631,9 +1678,9 @@ GameObject:
   - component: {fileID: 1467654793}
   - component: {fileID: 1467654791}
   - component: {fileID: 1467654792}
+  - component: {fileID: 1467654796}
   - component: {fileID: 1467654795}
   - component: {fileID: 1467654790}
-  - component: {fileID: 1467654796}
   m_Layer: 6
   m_Name: Goblin
   m_TagString: Untagged
@@ -1747,7 +1794,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1467654795
 MonoBehaviour:
@@ -1907,7 +1954,7 @@ Transform:
   m_Children:
   - {fileID: 88760774}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1692747646
 GameObject:

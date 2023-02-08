@@ -6,55 +6,28 @@ using UnityEngine.UI;
 public class ComboGaugeController : MonoBehaviour
 {
     [SerializeField] private GameObject radialFillObject;
-    [SerializeField] private float additionPercentage;
-    private Image _radialImage;
-
-    private float _currentCombo;
+    private Image _fill;
+    
     private bool _isShaking;
     // Start is called before the first frame update
     private void Start()
     {
         _isShaking = false;
-        _currentCombo = 0f;
         if (radialFillObject)
         {
-            _radialImage = radialFillObject.GetComponent<Image>();
+            _fill = radialFillObject.GetComponent<Image>();
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public void UpdateGauge(bool wasHit)
-    {
-        if (wasHit)
-        {
-            ShakeGauge();
-            _currentCombo = 0f;
-        }
-        else
-        {
-            ShakeGauge();
-            _currentCombo += additionPercentage / 100f;
-            if (_currentCombo > 1f)
-            {
-                _currentCombo = 1f;
-            }
-
-            _radialImage.color = Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
-            _radialImage.fillAmount = _currentCombo;
-        }
-    }
-
-    private void ShakeGauge()
+    public void UpdateGauge(float value)
     {
         if (!_isShaking)
         {
             StartCoroutine(Shake(0.1f, 10f));
         }
+        _fill.color = Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
+        _fill.fillAmount = value;
+        
     }
 
     private IEnumerator Shake(float duration, float magnitude)

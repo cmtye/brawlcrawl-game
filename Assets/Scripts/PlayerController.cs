@@ -10,35 +10,41 @@ public class PlayerController : MonoBehaviour
     private PlayerInputActions _playerControls;
     private InputAction _move;
 
-    // TODO: MASSIVE TODO, move this info to a game manager as well as its setters in Punch and Kick.
-    public GameObject GaugeUI;
-    private ComboGaugeController gauge;
-    
     // General character movement script that we feed axis values into.
     private CharacterMovement _movementScript;
     private Vector2 _moveDirection = Vector2.zero;
 
     private HealthBehavior _healthBehavior;
 
+    // Generalized attack stats. Can easily be altered for designers.
     [SerializeField] private float attackRate = 2f;
     [SerializeField] private float attackRange = 0.5f;
     [SerializeField] private float attackDamage = 2f;
     private float _actionDelay;
 
-    [SerializeField] private Transform punchBack;
-    [SerializeField] private Transform punchFront;
-    [SerializeField] private Transform kickBack;
-    [SerializeField] private Transform kickFront;
+    // Transform points for attack colliders. The two points form a capsule collider.
+    [SerializeField] private List<Transform> punchPoints;
+    [SerializeField] private List<Transform> kickPoints;
+    private Transform _punchBack;
+    private Transform _punchFront;
+    private Transform _kickBack;
+    private Transform _kickFront;
     
-    [SerializeField] private LayerMask enemyLayers;
+    // Collision variables for attacks landing on an enemy/object. Pre-allocation saves garbage collecting time later.
+    [SerializeField] private LayerMask attackableLayers;
     private readonly Collider[] _hitColliders = new Collider[20];
     
     private void Awake()
     {
-        gauge = GaugeUI.GetComponent<ComboGaugeController>();
         _playerControls = new PlayerInputActions();
         _movementScript = GetComponent<CharacterMovement>();
         _healthBehavior = GetComponent<HealthBehavior>();
+
+        _punchBack = punchPoints[0];
+        _punchFront = punchPoints[1];
+
+        _kickBack = kickPoints[0];
+        _kickFront = kickPoints[1];
     }
     private void OnEnable()
     {
@@ -67,11 +73,14 @@ public class PlayerController : MonoBehaviour
     {
         if (!(Time.time >= _actionDelay)) return;
 
-        // Create capsule collider instead of sphere for better feeling hit registration.
-        var overlaps = Physics.OverlapCapsuleNonAlloc(punchBack.position, 
-            punchFront.position, attackRange, _hitColliders, enemyLayers);
-        // Iterate through pre-allocated array of overlapping enemies. Saves garbage collection time.
-        if (overlaps >= 1) gauge.UpdateGauge(false);
+        // Create capsule collider instead of sphere for better feeling Z-axis hit registration.
+        var overlaps = Physics.OverlapCapsuleNonAlloc(_punchBack.position, 
+            _punchFront.position, attackRange, _hitColliders, attackableLayers);
+        
+        // Increment combo if you hit an enemy.
+        if (overlaps >= 1) GameManager.instance.IncrementCombo();
+        
+        // Iterate through array of enemies the attack overlapped with.
         for (var i = 0; i < overlaps; i++)
         {
             Debug.Log("Punched " + _hitColliders[i]);
@@ -82,10 +91,10 @@ public class PlayerController : MonoBehaviour
     private void Kick()
     {
         if (!(Time.time >= _actionDelay)) return;
-        
-        var overlaps = Physics.OverlapCapsuleNonAlloc(kickBack.position, 
-            kickFront.position, attackRange, _hitColliders, enemyLayers);
-        if (overlaps >= 1) gauge.UpdateGauge(false);
+
+        var overlaps = Physics.OverlapCapsuleNonAlloc(_kickBack.position,
+            _kickFront.position, attackRange, _hitColliders, attackableLayers);
+        if (overlaps >= 1) GameManager.instance.IncrementCombo();
         for (var i = 0; i < overlaps; i++)
         {
             Debug.Log("Kicked " + _hitColliders[i]);
@@ -106,24 +115,26 @@ public class PlayerController : MonoBehaviour
     {
         if (!(Time.time >= _actionDelay)) return;
         
+        // Ability resets combo temporarily for testing.
+        GameManager.instance.ResetCombo();
         Debug.Log("Ability");
         
         // TODO: alter the timing for flow
         _actionDelay = Time.time + 1f / attackRate;
     }
     
-    // Allows the transforms of attack points to be shown in the editor for designers.
+    // Allows the transforms of attack points to be shown in the editor for designers. Debug only.
     private void OnDrawGizmosSelected()
     {
-        if (punchBack == null || kickBack == null || punchFront == null || kickFront == null)
+        if (_punchBack == null || _kickBack == null || _punchFront == null || _kickFront == null)
         {
             return;
         }
         
-        Gizmos.DrawWireSphere(punchBack.position, attackRange);
-        Gizmos.DrawWireSphere(punchFront.position, attackRange);
-        Gizmos.DrawWireSphere(kickBack.position, attackRange);
-        Gizmos.DrawWireSphere(kickFront.position, attackRange);
+        Gizmos.DrawWireSphere(_punchBack.position, attackRange);
+        Gizmos.DrawWireSphere(_punchFront.position, attackRange);
+        Gizmos.DrawWireSphere(_kickBack.position, attackRange);
+        Gizmos.DrawWireSphere(_kickFront.position, attackRange);
     }
 
     private void OnTriggerEnter(Collider trigger)
