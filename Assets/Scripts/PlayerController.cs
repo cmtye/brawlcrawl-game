@@ -9,6 +9,10 @@ public class PlayerController : MonoBehaviour
     // 2019 Unity input system components. Allows easy gamepad configuration.
     private PlayerInputActions _playerControls;
     private InputAction _move;
+
+    // TODO: MASSIVE TODO, move this info to a game manager as well as its setters in Punch and Kick.
+    public GameObject GaugeUI;
+    private ComboGaugeController gauge;
     
     // General character movement script that we feed axis values into.
     private CharacterMovement _movementScript;
@@ -31,6 +35,7 @@ public class PlayerController : MonoBehaviour
     
     private void Awake()
     {
+        gauge = GaugeUI.GetComponent<ComboGaugeController>();
         _playerControls = new PlayerInputActions();
         _movementScript = GetComponent<CharacterMovement>();
         _healthBehavior = GetComponent<HealthBehavior>();
@@ -66,6 +71,7 @@ public class PlayerController : MonoBehaviour
         var overlaps = Physics.OverlapCapsuleNonAlloc(punchBack.position, 
             punchFront.position, attackRange, _hitColliders, enemyLayers);
         // Iterate through pre-allocated array of overlapping enemies. Saves garbage collection time.
+        if (overlaps >= 1) gauge.UpdateGauge(false);
         for (var i = 0; i < overlaps; i++)
         {
             Debug.Log("Punched " + _hitColliders[i]);
@@ -79,6 +85,7 @@ public class PlayerController : MonoBehaviour
         
         var overlaps = Physics.OverlapCapsuleNonAlloc(kickBack.position, 
             kickFront.position, attackRange, _hitColliders, enemyLayers);
+        if (overlaps >= 1) gauge.UpdateGauge(false);
         for (var i = 0; i < overlaps; i++)
         {
             Debug.Log("Kicked " + _hitColliders[i]);

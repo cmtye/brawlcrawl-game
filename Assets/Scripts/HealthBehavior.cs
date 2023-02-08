@@ -2,16 +2,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class HealthBehavior : MonoBehaviour
 {
     [SerializeField] private float maxHealth;
-    [SerializeField] private float armorMultiplier;
+    [SerializeField] private float armorMultiplier = 1f;
     private float _currentHealth;
+    private Rigidbody _rigidbody;
 
     private void Awake()
     {
         _currentHealth = maxHealth;
+        _rigidbody = GetComponent<Rigidbody>();
     }
     public void TakeDamage(float damage)
     {
@@ -32,7 +35,17 @@ public class HealthBehavior : MonoBehaviour
     }
     private void Die()
     {
-        Debug.Log(name + " has died.");
-        Destroy(gameObject);
+        // Give sprite actors the appearance of falling over when dying
+        if (_rigidbody)
+        {
+            _rigidbody.constraints = RigidbodyConstraints.None;
+            _rigidbody.velocity = new Vector3(0, 0, 1);
+            Destroy(gameObject, 1);
+        }
+        else
+        {
+            // TODO: Add particle explosion choice for both enemies and destructible objects.
+            Destroy(gameObject);
+        }
     }
 }
