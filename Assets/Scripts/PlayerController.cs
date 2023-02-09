@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
     private InputAction _move;
 
     // General character movement script that we feed axis values into.
-    private CharacterMovement _movementScript;
+    private CharacterMovement _characterMovement;
     private Vector2 _moveDirection = Vector2.zero;
 
     private HealthBehavior _healthBehavior;
@@ -39,7 +39,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         _playerControls = new PlayerInputActions();
-        _movementScript = GetComponent<CharacterMovement>();
+        _characterMovement = GetComponent<CharacterMovement>();
         _healthBehavior = GetComponent<HealthBehavior>();
 
         _punchBack = punchPoints[0];
@@ -64,11 +64,12 @@ public class PlayerController : MonoBehaviour
     }
     private void Update()
     {
+        // TODO: Move and alter attack delay logic to update for more persistent accessing.
         _moveDirection = _move.ReadValue<Vector2>();
     }
     private void FixedUpdate()
     {
-        _movementScript.Move(_moveDirection);
+        _characterMovement.Move(_moveDirection);
     }
     
     private void Punch()
@@ -101,9 +102,10 @@ public class PlayerController : MonoBehaviour
     {
         if (!(Time.time >= _actionDelay)) return;
         
-        Debug.Log("Countering");
+        // Movement script handles setting counter bool. If enemy hits you during this, health script initiates *TODO*
+        if (_characterMovement.isCountering) return;
+        StartCoroutine(_characterMovement.Counter());
         
-        // TODO: alter the timing for flow
         _actionDelay = Time.time + 1f / attackRate;
     }
     private void Ability()
@@ -154,7 +156,6 @@ public class PlayerController : MonoBehaviour
                 break;
         }
 
-        // TODO: alter the timing for flow
         _actionDelay = Time.time + 1f / attackRate;
     }
 

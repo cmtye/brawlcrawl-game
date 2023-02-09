@@ -19,10 +19,7 @@ public class GameManager : MonoBehaviour
         if (gaugeUI) _gaugeUI = gaugeUI.GetComponent<GaugeUIController>();
     }
 
-    public int GetCombo()
-    {
-        return currentCombo;
-    }
+    public int GetCombo() { return currentCombo; }
 
     public void IncrementCombo()
     {
@@ -37,9 +34,9 @@ public class GameManager : MonoBehaviour
         currentCombo = value;
         if (currentCombo > 100) currentCombo = 100;
         _gaugeUI.UpdateGauge(currentCombo);
-
     }
 
+    // TODO: Remove specified amount of tiers from combo gauge.
     public void ResetCombo()
     {
         currentCombo = 0;

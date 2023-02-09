@@ -7,27 +7,21 @@ public class GaugeUIController : MonoBehaviour
 {
     [SerializeField] private GameObject radialFillObject;
     private Image _fill;
-    
     private bool _isShaking;
-    // Start is called before the first frame update
+    
     private void Start()
     {
         _isShaking = false;
-        if (radialFillObject)
-        {
-            _fill = radialFillObject.GetComponent<Image>();
-        }
+        if (radialFillObject) _fill = radialFillObject.GetComponent<Image>();
     }
 
+    // Randomly changes color of gauge fill for now.
     public void UpdateGauge(int value)
     {
-        if (!_isShaking)
-        {
-            StartCoroutine(Shake(0.1f, 10f));
-        }
+        if (!_isShaking) StartCoroutine(Shake(0.1f, 10f));
+        
         _fill.color = Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
         _fill.fillAmount = Mathf.Clamp(value/100f, 0f, 1f);
-        
     }
 
     private IEnumerator Shake(float duration, float magnitude)
