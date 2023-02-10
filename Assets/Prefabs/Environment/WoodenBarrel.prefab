@@ -12,7 +12,9 @@ GameObject:
   - component: {fileID: 33606979284782736}
   - component: {fileID: 23815217906729240}
   - component: {fileID: 6112328101528117262}
-  m_Layer: 0
+  - component: {fileID: 8665304229640139172}
+  - component: {fileID: 3841121843606276026}
+  m_Layer: 7
   m_Name: WoodenBarrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -30,7 +32,8 @@ Transform:
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 3333829891637760887}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -97,3 +100,122 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.7951165, y: 1.094576, z: 0.8032074}
   m_Center: {x: 0.00631088, y: 0.5650529, z: 0.028911293}
+--- !u!114 &8665304229640139172
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1838849056880800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c02e1a8701352a458d82cd3f5e0a43c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 1
+  armorMultiplier: 1
+  counteredAttack: 0
+  damageFX: {fileID: 3333829891637760885}
+  destroyFX: {fileID: 3333829891637760885}
+--- !u!208 &3841121843606276026
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1838849056880800}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.42600003, y: 0.57900006, z: 0.43}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0.006, y: 0.572, z: 0}
+  m_TimeToStationary: 0.5
+--- !u!1001 &2785452071237756422
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 4632176470643508}
+    m_Modifications:
+    - target: {fileID: 640581492088862065, guid: b940a754c293abb49b6aa5e5c9f771fc,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 640581492088862065, guid: b940a754c293abb49b6aa5e5c9f771fc,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 640581492088862065, guid: b940a754c293abb49b6aa5e5c9f771fc,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.497
+      objectReference: {fileID: 0}
+    - target: {fileID: 640581492088862065, guid: b940a754c293abb49b6aa5e5c9f771fc,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 640581492088862065, guid: b940a754c293abb49b6aa5e5c9f771fc,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 640581492088862065, guid: b940a754c293abb49b6aa5e5c9f771fc,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 640581492088862065, guid: b940a754c293abb49b6aa5e5c9f771fc,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 640581492088862065, guid: b940a754c293abb49b6aa5e5c9f771fc,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 640581492088862065, guid: b940a754c293abb49b6aa5e5c9f771fc,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 640581492088862065, guid: b940a754c293abb49b6aa5e5c9f771fc,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 640581492088862065, guid: b940a754c293abb49b6aa5e5c9f771fc,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 640581492088862066, guid: b940a754c293abb49b6aa5e5c9f771fc,
+        type: 3}
+      propertyPath: m_Name
+      value: FX_WoodenBreak
+      objectReference: {fileID: 0}
+    - target: {fileID: 640581492088862066, guid: b940a754c293abb49b6aa5e5c9f771fc,
+        type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b940a754c293abb49b6aa5e5c9f771fc, type: 3}
+--- !u!198 &3333829891637760885 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 640581492088862067, guid: b940a754c293abb49b6aa5e5c9f771fc,
+    type: 3}
+  m_PrefabInstance: {fileID: 2785452071237756422}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &3333829891637760887 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 640581492088862065, guid: b940a754c293abb49b6aa5e5c9f771fc,
+    type: 3}
+  m_PrefabInstance: {fileID: 2785452071237756422}
+  m_PrefabAsset: {fileID: 0}
