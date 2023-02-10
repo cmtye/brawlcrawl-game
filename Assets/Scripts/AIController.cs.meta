@@ -3,7 +3,10 @@ guid: 77d7a0e095c9947359f02eeef5128b97
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - attackState: {fileID: 11400000, guid: 8f82a7a2e1f327c45830e8c4479ba54c, type: 2}
+  - wanderState: {fileID: 11400000, guid: 57f92540955aee54abc6d69c0ba0f0e4, type: 2}
+  - chaseState: {fileID: 11400000, guid: 0b6010df690ceac40a5c95898c66d6d2, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

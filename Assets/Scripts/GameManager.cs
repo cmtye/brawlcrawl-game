@@ -5,17 +5,43 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
-
     [SerializeField] private GameObject gaugeUI;
     [SerializeField] private int currentCombo;
     [SerializeField] private int comboIncrement;
     private GaugeUIController _gaugeUI;
+    public static GameManager instance;
+    private static GameObject _player;
+    [SerializeField] private Transform playerTransform;
+
+    private bool _isPlayerTransformCached;
+
+    public static Transform PlayerTransform
+    {
+        get
+        {
+            if (instance._isPlayerTransformCached) return instance.playerTransform;
+            
+            Debug.Log("Here");
+            instance.playerTransform = _player.transform;
+            instance._isPlayerTransformCached = true;
+            return instance.playerTransform;
+        }
+    }
 
     private void Awake()
     {
-        instance = this;
+        if (instance == null) { instance = this; }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
+        DontDestroyOnLoad(gameObject);
+        
         currentCombo = 0;
+        _player = FindObjectOfType<PlayerController>().gameObject;
+        _isPlayerTransformCached = false;
         if (gaugeUI) _gaugeUI = gaugeUI.GetComponent<GaugeUIController>();
     }
 

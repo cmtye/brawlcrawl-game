@@ -10,6 +10,7 @@ public class HealthBehavior : MonoBehaviour
     // Multiplies incoming damage by this value. 0 = no damage, 1 = full damage, 2 = double damage.
     [SerializeField] private float armorMultiplier = 1f;
     private float _currentHealth;
+    public bool counteredAttack;
     
     private CharacterMovement _characterMovement;
     private CharacterController _characterController;
@@ -30,7 +31,7 @@ public class HealthBehavior : MonoBehaviour
         {
             if (_characterMovement.isCountering)
             {
-                //TODO: Figure out a clean way to make the character use an attack from here
+                counteredAttack = true;
             }
         }
         
@@ -39,6 +40,7 @@ public class HealthBehavior : MonoBehaviour
         
         _currentHealth -= damage * armorMultiplier;
         EmitDamageFX();
+        
         Debug.Log(name + " has " + _currentHealth + " health.");
         
         if (_currentHealth <= 0) Die();

@@ -13,11 +13,13 @@ public class PlayerController : MonoBehaviour
     // General character movement script that we feed axis values into.
     private CharacterMovement _characterMovement;
     private CharacterController _characterController;
-    private Vector2 _moveDirection = Vector2.zero;
-    private Vector2 _currentInput;
-    private Vector2 _smoothInput;
-    private bool _groundedPlayer;
-    private Vector3 _playerVelocity;
+    private Vector2 _moveDirectionInput;
+    private Vector3 _moveDirection;
+    private bool _isMovementPressed;
+    //private Vector2 _currentInput;
+    //private Vector2 _smoothInput;
+    //private bool _groundedPlayer;
+    //private Vector3 _playerVelocity;
 
     private HealthBehavior _healthBehavior;
 
@@ -40,7 +42,9 @@ public class PlayerController : MonoBehaviour
     // Collision variables for attacks landing on an enemy/object. Pre-allocation saves garbage collecting time later.
     [SerializeField] private LayerMask attackableLayers;
     private readonly Collider[] _hitColliders = new Collider[20];
-    
+
+    [SerializeField] private List<GameObject> abilityIndicators;
+
     private void Awake()
     {
         _playerControls = new PlayerInputActions();
@@ -48,42 +52,54 @@ public class PlayerController : MonoBehaviour
         _characterController = GetComponent<CharacterController>();
         _healthBehavior = GetComponent<HealthBehavior>();
 
+        _playerControls.Player.Move.started += OnMovementInput;
+        _playerControls.Player.Move.canceled += OnMovementInput;
+        _playerControls.Player.Move.performed += OnMovementInput;
+        
+        _playerControls.Player.Punch.performed += _ => Punch(false);
+        _playerControls.Player.Kick.performed += _ => Kick();
+        _playerControls.Player.Counter.performed += _ => Counter();
+        _playerControls.Player.Ability.performed += _ => Ability();
+        
         _punchBack = punchPoints[0];
         _punchFront = punchPoints[1];
         _kickBack = kickPoints[0];
         _kickFront = kickPoints[1];
     }
+
+    private void OnMovementInput(InputAction.CallbackContext context)
+    {
+        _moveDirectionInput = context.ReadValue<Vector2>();
+        _moveDirection.x = _moveDirectionInput.x;
+        _moveDirection.z = _moveDirectionInput.y;
+        _isMovementPressed = _moveDirectionInput.x != 0 || _moveDirectionInput.y != 0;
+        
+    }
     private void OnEnable()
     {
-        _move = _playerControls.Player.Move;
-        _playerControls.Player.Punch.performed += _ => Punch();
-        _playerControls.Player.Kick.performed += _ => Kick();
-        _playerControls.Player.Counter.performed += _ => Counter();
-        _playerControls.Player.Ability.performed += _ => Ability();
-        
-        _playerControls.Enable();
+        _playerControls.Player.Enable();
     }
     private void OnDisable()
     {
-        _playerControls.Disable();
+        _playerControls.Player.Disable();
     }
-    private void Update()
-    {
-        
-        // TODO: Move and alter attack delay logic to update for more persistent accessing.
-        _moveDirection = _playerControls.Player.Move.ReadValue<Vector2>();
-        _characterMovement.Move(_moveDirection);
-    }
-
     private void FixedUpdate()
     {
+        // TODO: Move and alter attack delay logic to update for more persistent accessing.
+        
+        _characterMovement.Move(_moveDirection);
+        if (!_healthBehavior.counteredAttack) return;
+        
+        Punch(true);
+        _healthBehavior.counteredAttack = false;
     }
 
-    private void Punch()
+    private void Punch(bool noDelay)
     {
-        if (!(Time.time >= _actionDelay)) return;
+        if (!(Time.time >= _actionDelay) || noDelay) return;
 
         if (_characterMovement.isCountering) return;
+        abilityIndicators[0].GetComponent<MeshRenderer>().enabled = true;
         // Create capsule collider instead of sphere for better feeling Z-axis hit registration.
         var overlaps = Physics.OverlapCapsuleNonAlloc(_punchBack.position, 
             _punchFront.position, attackRange, _hitColliders, attackableLayers);
@@ -92,7 +108,7 @@ public class PlayerController : MonoBehaviour
         if (overlaps >= 1) GameManager.instance.IncrementCombo();
         // Iterate through array of enemies the attack overlapped with in method below.
         DamageCollided(_hitColliders, overlaps, attackDamage);
-        
+        Invoke(nameof(DeactivateRenderer), 0.2f);
         _actionDelay = Time.time + 1f / attackRate;
     }
     private void Kick()
@@ -100,16 +116,18 @@ public class PlayerController : MonoBehaviour
         if (!(Time.time >= _actionDelay)) return;
 
         if (_characterMovement.isCountering) return;
+        abilityIndicators[1].GetComponent<MeshRenderer>().enabled = true;
         var overlaps = Physics.OverlapCapsuleNonAlloc(_kickBack.position,
             _kickFront.position, attackRange, _hitColliders, attackableLayers);
         if (overlaps >= 1) GameManager.instance.IncrementCombo();
         DamageCollided(_hitColliders, overlaps, attackDamage);
-        
+        Invoke(nameof(DeactivateRenderer), 0.2f);
         _actionDelay = Time.time + 1f / attackRate;
     }
     private void Counter()
     {
         if (!(Time.time >= _actionDelay)) return;
+        if (!_characterController.isGrounded) return;
         
         // Movement script handles setting counter bool. If enemy hits you during this, health script initiates *TODO*
         if (_characterMovement.isCountering) return;
@@ -128,6 +146,7 @@ public class PlayerController : MonoBehaviour
         {
             case var _ when currentCombo >= abilityThresholds[2]:
                 // Gauge is at or past last threshold but not above
+                abilityIndicators[4].GetComponent<MeshRenderer>().enabled = true;
                 currentCombo -= abilityThresholds[2];
                 GameManager.instance.SetCombo(currentCombo);
                 Debug.Log("Level 3");
@@ -136,28 +155,33 @@ public class PlayerController : MonoBehaviour
                 overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 8,
                     _hitColliders, attackableLayers);
                 DamageCollided(_hitColliders, overlaps, attackDamage * 8);
+                Invoke(nameof(DeactivateRenderer), 0.2f);
                 break;
             
             case var _ when currentCombo >= abilityThresholds[1]:
                 // Gauge is at or past second threshold but not above
+                abilityIndicators[3].GetComponent<MeshRenderer>().enabled = true;
                 currentCombo -= abilityThresholds[1];
                 GameManager.instance.SetCombo(currentCombo);
                 Debug.Log("Level 2");
                 
-                overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 4,
+                overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 5,
                     _hitColliders, attackableLayers);
                 DamageCollided(_hitColliders, overlaps, attackDamage * 4);
+                Invoke(nameof(DeactivateRenderer), 0.2f);
                 break;
             
             case var _ when currentCombo >= abilityThresholds[0]:
                 // Gauge is at or past first threshold but not above
+                abilityIndicators[2].GetComponent<MeshRenderer>().enabled = true;
                 currentCombo -= abilityThresholds[0];
                 GameManager.instance.SetCombo(currentCombo);
                 Debug.Log("Level 1");
                 
-                overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 2,
+                overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 3,
                     _hitColliders, attackableLayers);
                 DamageCollided(_hitColliders, overlaps, attackDamage * 2);
+                Invoke(nameof(DeactivateRenderer), 0.2f);
                 break;
             
             default:
@@ -188,13 +212,16 @@ public class PlayerController : MonoBehaviour
         Gizmos.DrawWireSphere(_punchFront.position, attackRange);
         Gizmos.DrawWireSphere(_kickBack.position, attackRange);
         Gizmos.DrawWireSphere(_kickFront.position, attackRange);
+        
+        Gizmos.DrawWireSphere(transform.position, attackRange * 8);
     }
-
-    private void OnTriggerEnter(Collider trigger)
+    
+    private void DeactivateRenderer()
     {
-        if (trigger.gameObject.CompareTag("Enemy"))
+        foreach (var r in GetComponentsInChildren<MeshRenderer>())
         {
-            _healthBehavior.TakeDamage(1f);
+            r.enabled = false;
         }
     }
+
 }

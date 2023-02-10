@@ -13,6 +13,7 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] private float counterDuration = 2f;
     [SerializeField] private float gravityMultiplier = 1f;
     private float _gravityVelocity;
+    private Vector3 _currentVelocity;
     private float _gravity;
     public bool isCountering;
     public bool canMove;
@@ -21,8 +22,8 @@ public class CharacterMovement : MonoBehaviour
     private CharacterController _characterController;
 
     private bool _facingRight = true;
-    private Vector2 _currentInput;
-    private Vector2 _smoothInput = Vector2.zero;
+    private Vector3 _currentInput;
+    private Vector3 _smoothInput;
 
     // Start is called before the first frame update
     private void Awake()
@@ -34,20 +35,22 @@ public class CharacterMovement : MonoBehaviour
 
     // Takes in a 2D vector representing up and down movement, and translates it to 3D velocity on
     // a GameObjects rigidbody.
-    public void Move(Vector2 moveDirection)
+    public void Move(Vector3 moveDirection)
     {
         if (!canMove) return;
 
-        _currentInput = Vector2.SmoothDamp(_currentInput, moveDirection, ref _smoothInput, moveSmoothing);
-        
+        _currentInput = Vector3.SmoothDamp(_currentInput, 
+            moveDirection, ref _smoothInput, moveSmoothing);
+
         if (_characterController.isGrounded && _gravityVelocity < 0.0f)
         {
             _gravityVelocity = -1.0f;
         }
         _gravityVelocity -= _gravity * gravityMultiplier * Time.deltaTime;
         
-        var moveVector = new Vector3(_currentInput.x * hSpeed, _gravityVelocity, _currentInput.y * vSpeed);
-        _characterController.Move(moveVector * Time.deltaTime);
+        var moveVector = new Vector3(_currentInput.x * hSpeed, _gravityVelocity, _currentInput.z * vSpeed);
+        _currentVelocity = moveVector;
+        _characterController.Move(_currentVelocity * Time.deltaTime);
         
         switch (moveVector.x)
         {
@@ -72,10 +75,11 @@ public class CharacterMovement : MonoBehaviour
     public IEnumerator Counter()
     {
         if (isCountering) yield return 0;
-        
-        isCountering = true;
 
+        isCountering = true;
         var elapsed = 0.0f;
+        var holdColor = _spriteRenderer.color;
+        _spriteRenderer.color = Color.red;
         while (elapsed < counterDuration)
         {
             canMove = false;
@@ -83,6 +87,7 @@ public class CharacterMovement : MonoBehaviour
             yield return 0;
         }
         Debug.Log("Done countering");
+        _spriteRenderer.color = holdColor;
         isCountering = false;
         canMove = true;
 
