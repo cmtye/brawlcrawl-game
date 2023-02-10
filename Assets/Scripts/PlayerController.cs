@@ -12,7 +12,12 @@ public class PlayerController : MonoBehaviour
 
     // General character movement script that we feed axis values into.
     private CharacterMovement _characterMovement;
+    private CharacterController _characterController;
     private Vector2 _moveDirection = Vector2.zero;
+    private Vector2 _currentInput;
+    private Vector2 _smoothInput;
+    private bool _groundedPlayer;
+    private Vector3 _playerVelocity;
 
     private HealthBehavior _healthBehavior;
 
@@ -40,11 +45,11 @@ public class PlayerController : MonoBehaviour
     {
         _playerControls = new PlayerInputActions();
         _characterMovement = GetComponent<CharacterMovement>();
+        _characterController = GetComponent<CharacterController>();
         _healthBehavior = GetComponent<HealthBehavior>();
 
         _punchBack = punchPoints[0];
         _punchFront = punchPoints[1];
-
         _kickBack = kickPoints[0];
         _kickFront = kickPoints[1];
     }
@@ -64,18 +69,21 @@ public class PlayerController : MonoBehaviour
     }
     private void Update()
     {
+        
         // TODO: Move and alter attack delay logic to update for more persistent accessing.
-        _moveDirection = _move.ReadValue<Vector2>();
-    }
-    private void FixedUpdate()
-    {
+        _moveDirection = _playerControls.Player.Move.ReadValue<Vector2>();
         _characterMovement.Move(_moveDirection);
     }
-    
+
+    private void FixedUpdate()
+    {
+    }
+
     private void Punch()
     {
         if (!(Time.time >= _actionDelay)) return;
 
+        if (_characterMovement.isCountering) return;
         // Create capsule collider instead of sphere for better feeling Z-axis hit registration.
         var overlaps = Physics.OverlapCapsuleNonAlloc(_punchBack.position, 
             _punchFront.position, attackRange, _hitColliders, attackableLayers);
@@ -91,6 +99,7 @@ public class PlayerController : MonoBehaviour
     {
         if (!(Time.time >= _actionDelay)) return;
 
+        if (_characterMovement.isCountering) return;
         var overlaps = Physics.OverlapCapsuleNonAlloc(_kickBack.position,
             _kickFront.position, attackRange, _hitColliders, attackableLayers);
         if (overlaps >= 1) GameManager.instance.IncrementCombo();
@@ -112,6 +121,7 @@ public class PlayerController : MonoBehaviour
     {
         if (!(Time.time >= _actionDelay)) return;
 
+        if (_characterMovement.isCountering) return;
         var currentCombo = GameManager.instance.GetCombo();
         int overlaps;
         switch (currentCombo)

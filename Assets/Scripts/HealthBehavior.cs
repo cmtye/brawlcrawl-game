@@ -12,7 +12,7 @@ public class HealthBehavior : MonoBehaviour
     private float _currentHealth;
     
     private CharacterMovement _characterMovement;
-    private Rigidbody _rigidbody;
+    private CharacterController _characterController;
 
     // Particle systems added as the objects child and set in editor.
     [SerializeField] private ParticleSystem damageFX;
@@ -21,8 +21,8 @@ public class HealthBehavior : MonoBehaviour
     private void Awake()
     {
         _currentHealth = maxHealth;
-        _rigidbody = GetComponent<Rigidbody>();
         _characterMovement = GetComponent<CharacterMovement>();
+        _characterController = GetComponent<CharacterController>();
     }
     public void TakeDamage(float damage)
     {
@@ -57,13 +57,11 @@ public class HealthBehavior : MonoBehaviour
     private void Die()
     {
         // Give sprite actors the appearance of falling over when dying.
-        if (_rigidbody)
+        if (_characterMovement)
         {
-            _rigidbody.constraints = RigidbodyConstraints.None;
-            _rigidbody.velocity = new Vector3(0, 0, 1);
+            _characterController.enabled = false;
             Invoke(nameof(EmitDestroyedFX), 0.2f);
-            
-            Invoke(nameof(DeactivateRenderer), 0.6f);
+            Invoke(nameof(DeactivateRenderer), 0.3f);
             Destroy(gameObject, 1.2f);
         }
         // Breakables handles slightly differently than actors.
@@ -79,6 +77,7 @@ public class HealthBehavior : MonoBehaviour
             Destroy(gameObject, 1f);
         }
     }
+    
     
     private void EmitDamageFX() { if (damageFX) damageFX.Play(); }
     private void EmitDestroyedFX() { if (destroyFX) destroyFX.Play(); }

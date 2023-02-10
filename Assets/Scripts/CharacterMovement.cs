@@ -11,20 +11,25 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] private float hSpeed = 10f;
     [SerializeField] private float vSpeed = 6f;
     [SerializeField] private float counterDuration = 2f;
+    [SerializeField] private float gravityMultiplier = 1f;
+    private float _gravityVelocity;
+    private float _gravity;
     public bool isCountering;
     public bool canMove;
     
     private SpriteRenderer _spriteRenderer;
-    private Rigidbody _rigidbody;
+    private CharacterController _characterController;
 
     private bool _facingRight = true;
-    private Vector3 _velocity = Vector3.zero;
+    private Vector2 _currentInput;
+    private Vector2 _smoothInput = Vector2.zero;
 
     // Start is called before the first frame update
     private void Awake()
     {
-        _rigidbody = GetComponent<Rigidbody>();
+        _gravity = 9.81f;
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        _characterController = GetComponent<CharacterController>();
     }
 
     // Takes in a 2D vector representing up and down movement, and translates it to 3D velocity on
@@ -32,14 +37,19 @@ public class CharacterMovement : MonoBehaviour
     public void Move(Vector2 moveDirection)
     {
         if (!canMove) return;
-        if (!_rigidbody) return;
+
+        _currentInput = Vector2.SmoothDamp(_currentInput, moveDirection, ref _smoothInput, moveSmoothing);
         
-        moveDirection = moveDirection.normalized;
-        var currentVelocity = _rigidbody.velocity;
-        var targetVelocity = new Vector3(moveDirection.x * hSpeed, currentVelocity.y, moveDirection.y * vSpeed);
+        if (_characterController.isGrounded && _gravityVelocity < 0.0f)
+        {
+            _gravityVelocity = -1.0f;
+        }
+        _gravityVelocity -= _gravity * gravityMultiplier * Time.deltaTime;
         
-        _rigidbody.velocity = Vector3.SmoothDamp(currentVelocity, targetVelocity, ref _velocity, moveSmoothing);
-        switch (moveDirection.x)
+        var moveVector = new Vector3(_currentInput.x * hSpeed, _gravityVelocity, _currentInput.y * vSpeed);
+        _characterController.Move(moveVector * Time.deltaTime);
+        
+        switch (moveVector.x)
         {
             case > 0 when !_facingRight:
             case < 0 when _facingRight:
@@ -64,13 +74,10 @@ public class CharacterMovement : MonoBehaviour
         if (isCountering) yield return 0;
         
         isCountering = true;
-        // Little hop back for eye candy.
-        _rigidbody.velocity = _facingRight ? new Vector3(-1f, 1f, 1f) : new Vector3(1f, 1f, 1f);
 
         var elapsed = 0.0f;
         while (elapsed < counterDuration)
         {
-            Debug.Log("Countering");
             canMove = false;
             elapsed += Time.deltaTime;
             yield return 0;
