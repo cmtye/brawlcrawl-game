@@ -12,3 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28a5c1c2c0b48248d8c27f65d8e6f66, type: 3}
   m_Name: AttackState
   m_EditorClassIdentifier: 
+  attackableLayers:
+    serializedVersion: 2
+    m_Bits: 8

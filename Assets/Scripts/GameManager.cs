@@ -21,7 +21,6 @@ public class GameManager : MonoBehaviour
         {
             if (instance._isPlayerTransformCached) return instance.playerTransform;
             
-            Debug.Log("Here");
             instance.playerTransform = _player.transform;
             instance._isPlayerTransformCached = true;
             return instance.playerTransform;

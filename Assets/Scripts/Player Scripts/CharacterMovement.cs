@@ -86,7 +86,6 @@ public class CharacterMovement : MonoBehaviour
             elapsed += Time.deltaTime;
             yield return 0;
         }
-        Debug.Log("Done countering");
         _spriteRenderer.color = holdColor;
         isCountering = false;
         canMove = true;

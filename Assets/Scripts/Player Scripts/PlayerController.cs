@@ -86,19 +86,16 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         // TODO: Move and alter attack delay logic to update for more persistent accessing.
-        
         _characterMovement.Move(_moveDirection);
-        if (!_healthBehavior.counteredAttack) return;
+        if (_healthBehavior.counteredAttack) { Punch(true); }
         
-        Punch(true);
-        _healthBehavior.counteredAttack = false;
     }
 
     private void Punch(bool noDelay)
     {
-        if (!(Time.time >= _actionDelay) || noDelay) return;
-
-        if (_characterMovement.isCountering) return;
+        if (!(Time.time >= _actionDelay) && !noDelay) return;
+        if (_characterMovement.isCountering && !noDelay) return;
+        
         abilityIndicators[0].GetComponent<MeshRenderer>().enabled = true;
         // Create capsule collider instead of sphere for better feeling Z-axis hit registration.
         var overlaps = Physics.OverlapCapsuleNonAlloc(_punchBack.position, 
@@ -108,6 +105,7 @@ public class PlayerController : MonoBehaviour
         if (overlaps >= 1) GameManager.instance.IncrementCombo();
         // Iterate through array of enemies the attack overlapped with in method below.
         DamageCollided(_hitColliders, overlaps, attackDamage);
+        _healthBehavior.counteredAttack = false;
         Invoke(nameof(DeactivateRenderer), 0.2f);
         _actionDelay = Time.time + 1f / attackRate;
     }
@@ -126,10 +124,9 @@ public class PlayerController : MonoBehaviour
     }
     private void Counter()
     {
+        // TODO: Maybe rework this and make it better.
         if (!(Time.time >= _actionDelay)) return;
         if (!_characterController.isGrounded) return;
-        
-        // Movement script handles setting counter bool. If enemy hits you during this, health script initiates *TODO*
         if (_characterMovement.isCountering) return;
         StartCoroutine(_characterMovement.Counter());
         
@@ -197,7 +194,8 @@ public class PlayerController : MonoBehaviour
     {
         for (var i = 0; i < amountHit; i++)
         {
-            hit[i].GetComponent<HealthBehavior>().TakeDamage(damage);
+            var healthBar = hit[i].GetComponent<HealthBehavior>();
+            if (healthBar) healthBar.TakeDamage(damage);
         }
     }
     // Allows the transforms of attack points to be shown in the editor for designers. Debug only.

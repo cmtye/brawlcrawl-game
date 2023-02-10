@@ -31,7 +31,9 @@ public class HealthBehavior : MonoBehaviour
         {
             if (_characterMovement.isCountering)
             {
+                // TODO: Clean up this mechanic. Multiple hits give counter chain currently. Not happy with it.
                 counteredAttack = true;
+                return;
             }
         }
         

@@ -13,6 +13,10 @@ public class ChaseState : AIState
             controller.SetCurrentState(controller.attackState);
             controller.SetCountdown(controller.GetAttackDelay());
         }
+        else if (distance > controller.GetVisionRadius() * 1.25f)
+        {
+            controller.SetCurrentState(controller.wanderState);
+        }
         else
         {
             // Move towards target along the NavMesh
