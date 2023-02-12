@@ -28,6 +28,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float attackRange = 0.5f;
     [SerializeField] private float attackDamage = 2f;
     private float _actionDelay;
+    private IEnumerator _counterCoroutine;
 
     // Transform points for attack colliders. The two points form a capsule collider.
     [SerializeField] private List<Transform> punchPoints;
@@ -37,13 +38,14 @@ public class PlayerController : MonoBehaviour
     private Transform _kickBack;
     private Transform _kickFront;
 
-    [SerializeField] private List<int> abilityThresholds;
+    public List<int> abilityThresholds;
     
     // Collision variables for attacks landing on an enemy/object. Pre-allocation saves garbage collecting time later.
     [SerializeField] private LayerMask attackableLayers;
     private readonly Collider[] _hitColliders = new Collider[20];
 
     [SerializeField] private List<GameObject> abilityIndicators;
+    private List<MeshRenderer> _abilityRenderers;
 
     private void Awake()
     {
@@ -57,14 +59,18 @@ public class PlayerController : MonoBehaviour
         _playerControls.Player.Move.performed += OnMovementInput;
         
         _playerControls.Player.Punch.performed += _ => Punch(false);
-        _playerControls.Player.Kick.performed += _ => Kick();
-        _playerControls.Player.Counter.performed += _ => Counter();
+        _playerControls.Player.Kick.performed += _ => Kick(false);
+        _playerControls.Player.Counter.performed += _ => CounterAttack();
         _playerControls.Player.Ability.performed += _ => Ability();
         
         _punchBack = punchPoints[0];
         _punchFront = punchPoints[1];
         _kickBack = kickPoints[0];
         _kickFront = kickPoints[1];
+
+        _abilityRenderers = new List<MeshRenderer>();
+        foreach (var g in abilityIndicators)
+            _abilityRenderers.Add(g.GetComponent<MeshRenderer>());
     }
 
     private void OnMovementInput(InputAction.CallbackContext context)
@@ -73,7 +79,6 @@ public class PlayerController : MonoBehaviour
         _moveDirection.x = _moveDirectionInput.x;
         _moveDirection.z = _moveDirectionInput.y;
         _isMovementPressed = _moveDirectionInput.x != 0 || _moveDirectionInput.y != 0;
-        
     }
     private void OnEnable()
     {
@@ -86,98 +91,109 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         // TODO: Move and alter attack delay logic to update for more persistent accessing.
-        _characterMovement.Move(_moveDirection);
-        if (_healthBehavior.counteredAttack) { Punch(true); }
         
+        _characterMovement.Move(_moveDirection);
+        if (_characterMovement.coroutineEnded)
+            _counterCoroutine = null;
+        
+        if (!_healthBehavior.counteredAttack) return;
+        StopCoroutine(_counterCoroutine);
+        _characterMovement.EndCounter();
+        Punch(true);
+        Kick(true);
     }
 
     private void Punch(bool noDelay)
     {
-        if (!(Time.time >= _actionDelay) && !noDelay) return;
-        if (_characterMovement.isCountering && !noDelay) return;
+        if (!(Time.time >= _actionDelay) && !noDelay) 
+            return;
+        if (_characterMovement.isCountering && !noDelay) 
+            return;
         
-        abilityIndicators[0].GetComponent<MeshRenderer>().enabled = true;
+        _abilityRenderers[0].enabled = true;
         // Create capsule collider instead of sphere for better feeling Z-axis hit registration.
         var overlaps = Physics.OverlapCapsuleNonAlloc(_punchBack.position, 
             _punchFront.position, attackRange, _hitColliders, attackableLayers);
         
         // Increment combo if you hit an enemy.
-        if (overlaps >= 1) GameManager.instance.IncrementCombo();
+        if (overlaps >= 1) 
+            GameManager.instance.IncrementCombo();
         // Iterate through array of enemies the attack overlapped with in method below.
-        DamageCollided(_hitColliders, overlaps, attackDamage);
+        DamageCollided(overlaps, attackDamage);
         _healthBehavior.counteredAttack = false;
         Invoke(nameof(DeactivateRenderer), 0.2f);
         _actionDelay = Time.time + 1f / attackRate;
     }
-    private void Kick()
+    private void Kick(bool noDelay)
     {
-        if (!(Time.time >= _actionDelay)) return;
-
-        if (_characterMovement.isCountering) return;
-        abilityIndicators[1].GetComponent<MeshRenderer>().enabled = true;
+        if (!(Time.time >= _actionDelay) && !noDelay) 
+            return;
+        if (_characterMovement.isCountering && !noDelay) 
+            return;
+        _abilityRenderers[1].enabled = true;
         var overlaps = Physics.OverlapCapsuleNonAlloc(_kickBack.position,
             _kickFront.position, attackRange, _hitColliders, attackableLayers);
-        if (overlaps >= 1) GameManager.instance.IncrementCombo();
-        DamageCollided(_hitColliders, overlaps, attackDamage);
+        if (overlaps >= 1) 
+            GameManager.instance.IncrementCombo();
+        DamageCollided(overlaps, attackDamage);
         Invoke(nameof(DeactivateRenderer), 0.2f);
         _actionDelay = Time.time + 1f / attackRate;
     }
-    private void Counter()
+    private void CounterAttack()
     {
         // TODO: Maybe rework this and make it better.
-        if (!(Time.time >= _actionDelay)) return;
-        if (!_characterController.isGrounded) return;
-        if (_characterMovement.isCountering) return;
-        StartCoroutine(_characterMovement.Counter());
-        
+        if (!_characterController.isGrounded || _characterMovement.isCountering || Time.time < _actionDelay) 
+            return;
+        if (_counterCoroutine != null) return;
+        _counterCoroutine = _characterMovement.Counter();
+        StartCoroutine(_counterCoroutine);
         _actionDelay = Time.time + 1f / attackRate;
     }
     private void Ability()
     {
-        if (!(Time.time >= _actionDelay)) return;
+        if (!(Time.time >= _actionDelay)) 
+            return;
 
-        if (_characterMovement.isCountering) return;
+        if (_characterMovement.isCountering) 
+            return;
         var currentCombo = GameManager.instance.GetCombo();
         int overlaps;
         switch (currentCombo)
         {
             case var _ when currentCombo >= abilityThresholds[2]:
                 // Gauge is at or past last threshold but not above
-                abilityIndicators[4].GetComponent<MeshRenderer>().enabled = true;
+                _abilityRenderers[4].enabled = true;
                 currentCombo -= abilityThresholds[2];
                 GameManager.instance.SetCombo(currentCombo);
-                Debug.Log("Level 3");
                 
                 // Hard coded spherical explosion, may change or iterate on.
                 overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 8,
                     _hitColliders, attackableLayers);
-                DamageCollided(_hitColliders, overlaps, attackDamage * 8);
+                DamageCollided(overlaps, attackDamage * 8);
                 Invoke(nameof(DeactivateRenderer), 0.2f);
                 break;
             
             case var _ when currentCombo >= abilityThresholds[1]:
                 // Gauge is at or past second threshold but not above
-                abilityIndicators[3].GetComponent<MeshRenderer>().enabled = true;
+                _abilityRenderers[3].enabled = true;
                 currentCombo -= abilityThresholds[1];
                 GameManager.instance.SetCombo(currentCombo);
-                Debug.Log("Level 2");
                 
                 overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 5,
                     _hitColliders, attackableLayers);
-                DamageCollided(_hitColliders, overlaps, attackDamage * 4);
+                DamageCollided(overlaps, attackDamage * 4);
                 Invoke(nameof(DeactivateRenderer), 0.2f);
                 break;
             
             case var _ when currentCombo >= abilityThresholds[0]:
                 // Gauge is at or past first threshold but not above
-                abilityIndicators[2].GetComponent<MeshRenderer>().enabled = true;
+                _abilityRenderers[2].enabled = true;
                 currentCombo -= abilityThresholds[0];
                 GameManager.instance.SetCombo(currentCombo);
-                Debug.Log("Level 1");
                 
                 overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 3,
                     _hitColliders, attackableLayers);
-                DamageCollided(_hitColliders, overlaps, attackDamage * 2);
+                DamageCollided(overlaps, attackDamage * 2);
                 Invoke(nameof(DeactivateRenderer), 0.2f);
                 break;
             
@@ -190,22 +206,21 @@ public class PlayerController : MonoBehaviour
         _actionDelay = Time.time + 1f / attackRate;
     }
 
-    private void DamageCollided(Collider[] hit, int amountHit, float damage)
+    private void DamageCollided(int amountHit, float damage)
     {
         for (var i = 0; i < amountHit; i++)
         {
-            var healthBar = hit[i].GetComponent<HealthBehavior>();
-            if (healthBar) healthBar.TakeDamage(damage);
+            var healthBar = _hitColliders[i].GetComponent<HealthBehavior>();
+            if (healthBar) 
+                healthBar.TakeDamage(damage);
         }
     }
     // Allows the transforms of attack points to be shown in the editor for designers. Debug only.
     private void OnDrawGizmosSelected()
     {
         if (_punchBack == null || _kickBack == null || _punchFront == null || _kickFront == null)
-        {
             return;
-        }
-        
+
         Gizmos.DrawWireSphere(_punchBack.position, attackRange);
         Gizmos.DrawWireSphere(_punchFront.position, attackRange);
         Gizmos.DrawWireSphere(_kickBack.position, attackRange);
@@ -216,10 +231,9 @@ public class PlayerController : MonoBehaviour
     
     private void DeactivateRenderer()
     {
-        foreach (var r in GetComponentsInChildren<MeshRenderer>())
-        {
+        foreach (var r in _abilityRenderers)
             r.enabled = false;
-        }
     }
 
+    public HealthBehavior GetHealthBehavior() { return _healthBehavior; }
 }

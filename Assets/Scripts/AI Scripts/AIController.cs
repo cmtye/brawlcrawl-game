@@ -14,15 +14,20 @@ public class AIController : MonoBehaviour
     public AttackState attackState;
     public WanderState wanderState;
     public ChaseState chaseState;
-    
+
     [SerializeField] private AIState currentState;
+    [SerializeField] private float timeBetweenWaypoints = 2f;
+    private float _remainingTime;
     private float _countdown;
     private NavMeshAgent _navMeshAgent;
     private SpriteRenderer _spriteRenderer;
+    private CharacterMovement _characterMovement;
+
     private void Start()
     {
         _navMeshAgent = GetComponent<NavMeshAgent>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+        _characterMovement = GetComponent<CharacterMovement>();
         _navMeshAgent.updateRotation = false;
 
         currentState = wanderState;
@@ -37,6 +42,11 @@ public class AIController : MonoBehaviour
     {
         Gizmos.DrawWireSphere(transform.position, 2);
     }
+    
+    public float GetTimeBetweenWaypoints() { return timeBetweenWaypoints; }
+    public float GetRemainingTime() { return _remainingTime; }
+    public void SetRemainingTime(float value) { _remainingTime = value; }
+    public CharacterMovement GetCharacterMovement() { return _characterMovement; }
 
     public float GetCountdown() { return _countdown; }
     public void SetCountdown(float value) { _countdown = value; }

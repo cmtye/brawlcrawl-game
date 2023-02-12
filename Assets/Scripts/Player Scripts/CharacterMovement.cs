@@ -12,6 +12,7 @@ public class CharacterMovement : MonoBehaviour
     [SerializeField] private float vSpeed = 6f;
     [SerializeField] private float counterDuration = 2f;
     [SerializeField] private float gravityMultiplier = 1f;
+    [HideInInspector] public bool coroutineEnded;
     private float _gravityVelocity;
     private Vector3 _currentVelocity;
     private float _gravity;
@@ -21,31 +22,35 @@ public class CharacterMovement : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
     private CharacterController _characterController;
 
-    private bool _facingRight = true;
+    public bool facingRight = true;
     private Vector3 _currentInput;
     private Vector3 _smoothInput;
+
+    private Color _baseColor;
 
     // Start is called before the first frame update
     private void Awake()
     {
-        _gravity = 9.81f;
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _characterController = GetComponent<CharacterController>();
+
+        _baseColor = _spriteRenderer.color;
+        _gravity = 9.81f;
     }
 
     // Takes in a 2D vector representing up and down movement, and translates it to 3D velocity on
     // a GameObjects rigidbody.
     public void Move(Vector3 moveDirection)
     {
-        if (!canMove) return;
+        if (!canMove) 
+            return;
 
         _currentInput = Vector3.SmoothDamp(_currentInput, 
             moveDirection, ref _smoothInput, moveSmoothing);
 
         if (_characterController.isGrounded && _gravityVelocity < 0.0f)
-        {
             _gravityVelocity = -1.0f;
-        }
+        
         _gravityVelocity -= _gravity * gravityMultiplier * Time.deltaTime;
         
         var moveVector = new Vector3(_currentInput.x * hSpeed, _gravityVelocity, _currentInput.z * vSpeed);
@@ -54,31 +59,33 @@ public class CharacterMovement : MonoBehaviour
         
         switch (moveVector.x)
         {
-            case > 0 when !_facingRight:
-            case < 0 when _facingRight:
+            case > 0 when !facingRight:
+            case < 0 when facingRight:
                 Flip();
                 break;
         }
     }
 
     // Mirror the sprite and its colliders when moving left, revert when moving right.
-    private void Flip()
+    public void Flip()
     {
-        _facingRight = !_facingRight;
+        facingRight = !facingRight;
         _spriteRenderer.flipX = !_spriteRenderer.flipX;
 
         // If attack colliders are set, rotate them along with the sprite.
-        if (attackColliders) attackColliders.transform.Rotate(0, 180, 0);
+        if (attackColliders) 
+            attackColliders.transform.Rotate(0, 180, 0);
     }
     
     // The character jumps back and enters a state where they can't move, but will retaliate if hit during duration.
     public IEnumerator Counter()
     {
-        if (isCountering) yield return 0;
+        coroutineEnded = false;
+        if (isCountering) 
+            yield return 0;
 
         isCountering = true;
         var elapsed = 0.0f;
-        var holdColor = _spriteRenderer.color;
         _spriteRenderer.color = Color.red;
         while (elapsed < counterDuration)
         {
@@ -86,9 +93,14 @@ public class CharacterMovement : MonoBehaviour
             elapsed += Time.deltaTime;
             yield return 0;
         }
-        _spriteRenderer.color = holdColor;
+        EndCounter();
+    }
+
+    public void EndCounter()
+    {
+        coroutineEnded = true;
+        _spriteRenderer.color = _baseColor;
         isCountering = false;
         canMove = true;
-
     }
 }

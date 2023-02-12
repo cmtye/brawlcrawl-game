@@ -13,12 +13,14 @@ public class AttackState : AIState
             controller.SetCountdown(controller.GetCountdown() - Time.deltaTime);
             return;
         }
-        // Create capsule collider instead of sphere for better feeling Z-axis hit registration.
+        
         var overlaps = Physics.OverlapSphere(controller.transform.position, 2, attackableLayers);
-        foreach (Collider c in overlaps)
+        foreach (var c in overlaps)
         {
+            if (c.isTrigger) continue;
+            
             var healthBar = c.GetComponent<HealthBehavior>();
-            if (healthBar) healthBar.TakeDamage(2);
+            if (healthBar) healthBar.TakeDamage(1);
         }
         controller.GetNavMeshAgent().isStopped = false;
         controller.SetCurrentState(controller.chaseState);

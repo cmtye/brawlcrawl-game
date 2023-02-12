@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     private GaugeUIController _gaugeUI;
     public static GameManager instance;
     private static GameObject _player;
+    private List<int> _playerAbilityThresholds;
     [SerializeField] private Transform playerTransform;
 
     private bool _isPlayerTransformCached;
@@ -39,7 +40,9 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         
         currentCombo = 0;
-        _player = FindObjectOfType<PlayerController>().gameObject;
+        var playerScript = FindObjectOfType<PlayerController>();
+        _player = playerScript.gameObject;
+        _playerAbilityThresholds = playerScript.abilityThresholds;
         _isPlayerTransformCached = false;
         if (gaugeUI) _gaugeUI = gaugeUI.GetComponent<GaugeUIController>();
     }
@@ -60,11 +63,22 @@ public class GameManager : MonoBehaviour
         if (currentCombo > 100) currentCombo = 100;
         _gaugeUI.UpdateGauge(currentCombo);
     }
-
-    // TODO: Remove specified amount of tiers from combo gauge.
+    
     public void ResetCombo()
     {
-        currentCombo = 0;
+        if (currentCombo >= _playerAbilityThresholds[2])
+        {
+            currentCombo = _playerAbilityThresholds[1];
+        }
+        else if (currentCombo >= _playerAbilityThresholds[1])
+        {
+            currentCombo = _playerAbilityThresholds[0];
+        }
+        else if (currentCombo >= _playerAbilityThresholds[0])
+        {
+            currentCombo = 0;
+        }
+
         _gaugeUI.UpdateGauge(currentCombo);
     }
 }
