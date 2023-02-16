@@ -6,9 +6,11 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private GameObject gaugeUI;
+    [SerializeField] private GameObject healthUI;
     [SerializeField] private int currentCombo;
     [SerializeField] private int comboIncrement;
     private GaugeUIController _gaugeUI;
+    private HealthUIController _healthUI;
     public static GameManager instance;
     private static GameObject _player;
     private List<int> _playerAbilityThresholds;
@@ -45,10 +47,35 @@ public class GameManager : MonoBehaviour
         _playerAbilityThresholds = playerScript.abilityThresholds;
         _isPlayerTransformCached = false;
         if (gaugeUI) _gaugeUI = gaugeUI.GetComponent<GaugeUIController>();
+        if (healthUI) _healthUI = healthUI.GetComponent<HealthUIController>();
     }
 
     public int GetCombo() { return currentCombo; }
 
+    public void UpdateHealthUI(int value)
+    {
+        switch (value)
+        {
+            case 5: 
+                _healthUI.UpdateHealth(1f);
+                break;
+            case 4:
+                _healthUI.UpdateHealth(0.8f);
+                break;
+            case 3:
+                _healthUI.UpdateHealth(0.55f);
+                break;
+            case 2:
+                _healthUI.UpdateHealth(0.35f);
+                break;
+            case 1:
+                _healthUI.UpdateHealth(0.15f);
+                break;
+            case 0:
+                _healthUI.UpdateHealth(0f);
+                break;
+        }
+    }
     public void IncrementCombo()
     {
         currentCombo += comboIncrement;

@@ -6,10 +6,10 @@ using Random = UnityEngine.Random;
 
 public class HealthBehavior : MonoBehaviour
 {
-    [SerializeField] private float maxHealth;
+    [SerializeField] private int maxHealth;
     // Multiplies incoming damage by this value. 0 = no damage, 1 = full damage, 2 = double damage.
-    [SerializeField] private float armorMultiplier = 1f;
-    public float currentHealth;
+    [SerializeField] private int armorMultiplier = 1;
+    public int currentHealth;
     public bool counteredAttack;
     
     private CharacterMovement _characterMovement;
@@ -25,7 +25,7 @@ public class HealthBehavior : MonoBehaviour
         _characterMovement = GetComponent<CharacterMovement>();
         _characterController = GetComponent<CharacterController>();
     }
-    public void TakeDamage(float damage)
+    public void TakeDamage(int damage)
     {
         if (_characterMovement)
             if (_characterMovement.isCountering)
@@ -36,9 +36,14 @@ public class HealthBehavior : MonoBehaviour
             }
 
         // Only resets combo if the hit object has a player controller.
-        if (GetComponent<PlayerController>()) GameManager.instance.ResetCombo();
         
         currentHealth -= damage * armorMultiplier;
+        if (GetComponent<PlayerController>())
+        {
+            Debug.Log(currentHealth);
+            GameManager.instance.ResetCombo();
+            GameManager.instance.UpdateHealthUI(currentHealth);
+        }
         EmitDamageFX();
         
         if (currentHealth <= 0) 
@@ -47,7 +52,7 @@ public class HealthBehavior : MonoBehaviour
 
     public float GetHealth() { return currentHealth; }
     public float GetMaxHealth() { return maxHealth; }
-    public void GainHealth(float healing)
+    public void GainHealth(int healing)
     {
         currentHealth += healing;
         if (currentHealth > maxHealth)

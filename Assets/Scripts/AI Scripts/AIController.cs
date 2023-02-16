@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Rendering;
 
 public class AIController : MonoBehaviour
 {
     [SerializeField] private float attackRange = 1f;
+    [SerializeField] private float attackStateCooldown = 2f;
     [SerializeField] private float visionRadius = 3f;
     [SerializeField] private float wanderRadius = 1f;
     [SerializeField] private int navMeshMask = NavMesh.AllAreas;
@@ -17,6 +19,8 @@ public class AIController : MonoBehaviour
 
     [SerializeField] private AIState currentState;
     [SerializeField] private float timeBetweenWaypoints = 2f;
+    private float _attackStateRemaining;
+    private bool _attackStateCooldown;
     private float _remainingTime;
     private float _countdown;
     private NavMeshAgent _navMeshAgent;
@@ -29,12 +33,24 @@ public class AIController : MonoBehaviour
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _characterMovement = GetComponent<CharacterMovement>();
         _navMeshAgent.updateRotation = false;
+        _attackStateCooldown = false;
 
         currentState = wanderState;
     }
 
     private void Update()
     {
+        if (_attackStateCooldown)
+        {
+            if (GetAttackStateRemaining() < attackStateCooldown)
+            {
+                SetAttackStateRemaining(GetAttackStateRemaining() + Time.deltaTime);
+                return;
+            }
+        }
+
+        _attackStateCooldown = false;
+        SetAttackStateRemaining(0);
         currentState.Execute(this);
     }
 
@@ -42,7 +58,11 @@ public class AIController : MonoBehaviour
     {
         Gizmos.DrawWireSphere(transform.position, 2);
     }
-    
+
+    private float GetAttackStateRemaining() { return _attackStateRemaining; }
+
+    private void SetAttackStateRemaining(float value) { _attackStateRemaining = value; }
+    public void SetAttackStateCooldown(bool value) { _attackStateCooldown = value; }
     public float GetTimeBetweenWaypoints() { return timeBetweenWaypoints; }
     public float GetRemainingTime() { return _remainingTime; }
     public void SetRemainingTime(float value) { _remainingTime = value; }

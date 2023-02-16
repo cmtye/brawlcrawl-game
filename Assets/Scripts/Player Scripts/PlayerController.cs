@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
     // Generalized attack stats. Can easily be altered for designers.
     [SerializeField] private float attackRate = 2f;
     [SerializeField] private float attackRange = 0.5f;
-    [SerializeField] private float attackDamage = 2f;
+    [SerializeField] private int attackDamage = 2;
     private float _actionDelay;
     private IEnumerator _counterCoroutine;
 
@@ -88,7 +88,7 @@ public class PlayerController : MonoBehaviour
     {
         _playerControls.Player.Disable();
     }
-    private void FixedUpdate()
+    private void Update()
     {
         // TODO: Move and alter attack delay logic to update for more persistent accessing.
         
@@ -117,7 +117,8 @@ public class PlayerController : MonoBehaviour
         
         // Increment combo if you hit an enemy.
         if (overlaps >= 1) 
-            GameManager.instance.IncrementCombo();
+            if (GameManager.instance)
+                GameManager.instance.IncrementCombo();
         // Iterate through array of enemies the attack overlapped with in method below.
         DamageCollided(overlaps, attackDamage);
         _healthBehavior.counteredAttack = false;
@@ -133,8 +134,9 @@ public class PlayerController : MonoBehaviour
         _abilityRenderers[1].enabled = true;
         var overlaps = Physics.OverlapCapsuleNonAlloc(_kickBack.position,
             _kickFront.position, attackRange, _hitColliders, attackableLayers);
-        if (overlaps >= 1) 
-            GameManager.instance.IncrementCombo();
+        if (overlaps >= 1)
+            if (GameManager.instance)
+                GameManager.instance.IncrementCombo();
         DamageCollided(overlaps, attackDamage);
         Invoke(nameof(DeactivateRenderer), 0.2f);
         _actionDelay = Time.time + 1f / attackRate;
@@ -206,7 +208,7 @@ public class PlayerController : MonoBehaviour
         _actionDelay = Time.time + 1f / attackRate;
     }
 
-    private void DamageCollided(int amountHit, float damage)
+    private void DamageCollided(int amountHit, int damage)
     {
         for (var i = 0; i < amountHit; i++)
         {
