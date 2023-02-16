@@ -98,10 +98,10 @@ public class PlayerController : MonoBehaviour
 
         if (_characterMovement.coroutineEnded)
             _counterCoroutine = null;
-        
-        if (!_characterMovement.isCountering)
-            _playerAnimator.SetBool("isRunning", _isMovementPressed);
-        
+
+        _playerAnimator.SetBool("isRunning", !_characterMovement.isCountering && _isMovementPressed);
+
+
         if (!_healthBehavior.counteredAttack) return;
         StopCoroutine(_counterCoroutine);
         _characterMovement.EndCounter();

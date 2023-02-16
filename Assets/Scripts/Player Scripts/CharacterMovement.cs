@@ -86,7 +86,7 @@ public class CharacterMovement : MonoBehaviour
 
         isCountering = true;
         var elapsed = 0.0f;
-        _spriteRenderer.color = Color.red;
+        _spriteRenderer.color = Color.cyan;
         while (elapsed < counterDuration)
         {
             canMove = false;

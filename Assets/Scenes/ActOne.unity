@@ -6679,6 +6679,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall
       objectReference: {fileID: 0}
+    - target: {fileID: 4496652305831135602, guid: aa177d33c8df1b84fba6d28ffbba6eb0,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4496652305831135602, guid: aa177d33c8df1b84fba6d28ffbba6eb0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 5061333270446311816, guid: aa177d33c8df1b84fba6d28ffbba6eb0,
         type: 3}
       propertyPath: m_Mesh
@@ -25541,6 +25551,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 4496652305831135602, guid: aa177d33c8df1b84fba6d28ffbba6eb0,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4496652305831135602, guid: aa177d33c8df1b84fba6d28ffbba6eb0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 5061333270446311816, guid: aa177d33c8df1b84fba6d28ffbba6eb0,
         type: 3}
       propertyPath: m_Mesh
@@ -27827,6 +27847,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Wall (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4496652305831135602, guid: aa177d33c8df1b84fba6d28ffbba6eb0,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4496652305831135602, guid: aa177d33c8df1b84fba6d28ffbba6eb0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 5061333270446311816, guid: aa177d33c8df1b84fba6d28ffbba6eb0,
         type: 3}
@@ -53161,6 +53191,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall
       objectReference: {fileID: 0}
+    - target: {fileID: 4496652305831135602, guid: aa177d33c8df1b84fba6d28ffbba6eb0,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4496652305831135602, guid: aa177d33c8df1b84fba6d28ffbba6eb0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 5061333270446311816, guid: aa177d33c8df1b84fba6d28ffbba6eb0,
         type: 3}
       propertyPath: m_Mesh
@@ -54426,7 +54466,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.99910843, g: 0.390566, b: 1, a: 0.3529412}
+  m_Color: {r: 0.9528302, g: 0.8574159, b: 0.43596476, a: 0.20392157}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -54941,6 +54981,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Wall (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4496652305831135602, guid: aa177d33c8df1b84fba6d28ffbba6eb0,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4496652305831135602, guid: aa177d33c8df1b84fba6d28ffbba6eb0,
+        type: 3}
+      propertyPath: m_NavMeshLayer
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4496652305831135602, guid: aa177d33c8df1b84fba6d28ffbba6eb0,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 5061333270446311816, guid: aa177d33c8df1b84fba6d28ffbba6eb0,
         type: 3}
@@ -60464,13 +60519,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7682206737738254259, guid: 6c262da0309729f4e9de7e459b67074f,
         type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7682206737738254259, guid: 6c262da0309729f4e9de7e459b67074f,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7682206737738254259, guid: 6c262da0309729f4e9de7e459b67074f,
+        type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.95
       objectReference: {fileID: 0}
     - target: {fileID: 7682206737738254259, guid: 6c262da0309729f4e9de7e459b67074f,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 12.025
+      value: 12.222
       objectReference: {fileID: 0}
     - target: {fileID: 7682206737738254259, guid: 6c262da0309729f4e9de7e459b67074f,
         type: 3}
@@ -60521,6 +60586,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Height
       value: 3.69
+      objectReference: {fileID: 0}
+    - target: {fileID: 7682206737738254268, guid: 6c262da0309729f4e9de7e459b67074f,
+        type: 3}
+      propertyPath: m_SkinWidth
+      value: 0.0005
       objectReference: {fileID: 0}
     - target: {fileID: 7682206737738254269, guid: 6c262da0309729f4e9de7e459b67074f,
         type: 3}
