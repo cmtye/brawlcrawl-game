@@ -46,6 +46,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private List<GameObject> abilityIndicators;
     private List<MeshRenderer> _abilityRenderers;
+    private Animator _playerAnimator;
 
     private void Awake()
     {
@@ -68,6 +69,7 @@ public class PlayerController : MonoBehaviour
         _kickBack = kickPoints[0];
         _kickFront = kickPoints[1];
 
+        _playerAnimator = GetComponent<Animator>();
         _abilityRenderers = new List<MeshRenderer>();
         foreach (var g in abilityIndicators)
             _abilityRenderers.Add(g.GetComponent<MeshRenderer>());
@@ -93,8 +95,12 @@ public class PlayerController : MonoBehaviour
         // TODO: Move and alter attack delay logic to update for more persistent accessing.
         
         _characterMovement.Move(_moveDirection);
+
         if (_characterMovement.coroutineEnded)
             _counterCoroutine = null;
+        
+        if (!_characterMovement.isCountering)
+            _playerAnimator.SetBool("isRunning", _isMovementPressed);
         
         if (!_healthBehavior.counteredAttack) return;
         StopCoroutine(_counterCoroutine);

@@ -527,7 +527,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: b2dbba29763d01b4ea9789c3698561d3, type: 3}
+  m_Sprite: {fileID: 1843385775, guid: c5266b7a61ffc492c922d698a8161ecd, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0
@@ -583,6 +583,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 3
   armorMultiplier: 0
+  currentHealth: 0
   counteredAttack: 0
   damageFX: {fileID: 6141669461862176932}
   destroyFX: {fileID: 0}
@@ -604,8 +605,10 @@ MonoBehaviour:
   vSpeed: 4
   counterDuration: 2
   gravityMultiplier: 1
+  coroutineEnded: 0
   isCountering: 0
   canMove: 1
+  facingRight: 1
 --- !u!114 &7682206737738254258
 MonoBehaviour:
   m_ObjectHideFlags: 0
