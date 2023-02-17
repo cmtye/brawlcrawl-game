@@ -7,16 +7,20 @@ public class CameraBehavior : MonoBehaviour
 {
     [Range(0, 1.0f)] [SerializeField] private float moveSmoothing = 0.5f;
     [SerializeField] private Vector3 offset;
+    private Vector3 _playerOffset;
     [SerializeField] private Vector3 rayCastOffset;
     public Transform[] _obstructions;
     private Vector3 _velocity = Vector3.zero;
     private Vector3 _targetPosition;
     private int _oldHitsNumber;
+    private Camera _parentCamera;
     
     public Transform target;
 
     void Start()
     {
+        _parentCamera = GetComponent<Camera>();
+        _playerOffset = offset;
         _oldHitsNumber = 0;
     }
 
@@ -27,11 +31,17 @@ public class CameraBehavior : MonoBehaviour
 
     private void LateUpdate()
     {
-        viewObstructed();
+        ViewObstructed();
         transform.position = Vector3.SmoothDamp(transform.position, _targetPosition, ref _velocity, moveSmoothing);
     }
 
-    void viewObstructed()
+    public void ChangeTarget(Transform value, Vector3 newOffset, bool isPlayer)
+    {
+        target = value;
+        offset = isPlayer ? _playerOffset : newOffset;
+        _parentCamera.orthographicSize = isPlayer ? 4 : 5;
+    }
+    private void ViewObstructed()
     {
         float characterDistance = Vector3.Distance(transform.position + rayCastOffset, target.transform.position);
         int layerNumber = LayerMask.NameToLayer("Obstruction");

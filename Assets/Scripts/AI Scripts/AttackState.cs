@@ -16,8 +16,8 @@ public class AttackState : AIState
         }
         
         var overlaps = Physics.OverlapSphere(controller.transform.position, 2, attackableLayers);
-        controller.SetCountdown(controller.GetAttackDelay());
         controller.SetAttackStateCooldown(true);
+        controller.SetCountdown(controller.GetAttackDelay());
         List<string> hitAlready = new List<string>();
         foreach (var c in overlaps)
         {

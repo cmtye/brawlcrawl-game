@@ -9886,7 +9886,7 @@ Transform:
   m_GameObject: {fileID: 3807947618296309031}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -18.172394, y: 8.78, z: -2.884935}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 0.5}
+  m_LocalScale: {x: 0.34, y: 0.34, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3807947617630082088}
@@ -10011,11 +10011,11 @@ CharacterController:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Height: 3.48
+  m_Height: 3.09
   m_Radius: 0.43
   m_SlopeLimit: 45
   m_StepOffset: 0.3
-  m_SkinWidth: 0.08
+  m_SkinWidth: 0.0005
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!195 &3807947617347996699
@@ -10036,8 +10036,8 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 3.45
-  m_BaseOffset: 1.815
+  m_Height: 2.88
+  m_BaseOffset: 1.56
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!114 &3807947617347996698
@@ -10053,7 +10053,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackRange: 2
-  attackStateCooldown: 1
+  attackStateCooldown: 1.5
   visionRadius: 4
   wanderRadius: 1
   navMeshMask: -1
