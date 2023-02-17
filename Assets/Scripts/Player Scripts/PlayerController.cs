@@ -48,6 +48,7 @@ public class PlayerController : MonoBehaviour
     private List<MeshRenderer> _abilityRenderers;
     private Animator _playerAnimator;
 
+
     private void Awake()
     {
         _playerControls = new PlayerInputActions();
@@ -73,6 +74,8 @@ public class PlayerController : MonoBehaviour
         _abilityRenderers = new List<MeshRenderer>();
         foreach (var g in abilityIndicators)
             _abilityRenderers.Add(g.GetComponent<MeshRenderer>());
+
+        
     }
 
     private void OnMovementInput(InputAction.CallbackContext context)
@@ -99,14 +102,27 @@ public class PlayerController : MonoBehaviour
         if (_characterMovement.coroutineEnded)
             _counterCoroutine = null;
 
+        //Set animator to run Vira's running animation if Vira is not countering
+        //and she is in process of moving
         _playerAnimator.SetBool("isRunning", !_characterMovement.isCountering && _isMovementPressed);
 
-
+               
         if (!_healthBehavior.counteredAttack) return;
         StopCoroutine(_counterCoroutine);
         _characterMovement.EndCounter();
         Punch(true);
         Kick(true);
+
+        
+    }
+
+
+    //Allows animations finish there keyframes before reseting to there next state
+    IEnumerator Test()
+    {
+        yield return new WaitForSeconds(0.21f);
+        _playerAnimator.SetBool("isKicking", false);
+        _playerAnimator.SetBool("isPunching", false);
     }
 
     private void Punch(bool noDelay)
@@ -115,14 +131,19 @@ public class PlayerController : MonoBehaviour
             return;
         if (_characterMovement.isCountering && !noDelay) 
             return;
-        
-        _abilityRenderers[0].enabled = true;
+
+        //When punch method is called, run Vira's animation to punch equal to true
+        _playerAnimator.SetBool("isPunching", true);
+
+
+            _abilityRenderers[0].enabled = true;
         // Create capsule collider instead of sphere for better feeling Z-axis hit registration.
         var overlaps = Physics.OverlapCapsuleNonAlloc(_punchBack.position, 
             _punchFront.position, attackRange, _hitColliders, attackableLayers);
-        
+
+
         // Increment combo if you hit an enemy.
-        if (overlaps >= 1) 
+        if (overlaps >= 1)
             if (GameManager.instance)
                 GameManager.instance.IncrementCombo();
         // Iterate through array of enemies the attack overlapped with in method below.
@@ -130,6 +151,9 @@ public class PlayerController : MonoBehaviour
         _healthBehavior.counteredAttack = false;
         Invoke(nameof(DeactivateRenderer), 0.2f);
         _actionDelay = Time.time + 1f / attackRate;
+
+
+        
     }
     private void Kick(bool noDelay)
     {
@@ -137,6 +161,10 @@ public class PlayerController : MonoBehaviour
             return;
         if (_characterMovement.isCountering && !noDelay) 
             return;
+
+            _playerAnimator.SetBool("isKicking", true);
+
+
         _abilityRenderers[1].enabled = true;
         var overlaps = Physics.OverlapCapsuleNonAlloc(_kickBack.position,
             _kickFront.position, attackRange, _hitColliders, attackableLayers);
@@ -241,6 +269,16 @@ public class PlayerController : MonoBehaviour
     {
         foreach (var r in _abilityRenderers)
             r.enabled = false;
+        /*
+        var elapsed = 0f;
+        while(elapsed < 2f)
+        {
+            elapsed += Time.deltaTime;
+        }
+        */
+        StartCoroutine(Test());
+
+
     }
 
     public HealthBehavior GetHealthBehavior() { return _healthBehavior; }
