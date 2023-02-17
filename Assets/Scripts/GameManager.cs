@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int currentCombo;
     [SerializeField] private int comboIncrement;
     [SerializeField] private Camera mainCamera;
+    [SerializeField] private GameObject pauseUI;
     private GaugeUIController _gaugeUI;
     private HealthUIController _healthUI;
     public static GameManager instance;
@@ -18,6 +20,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform playerTransform;
 
     private bool _isPlayerTransformCached;
+    private Scene _scene;
 
     public static Transform PlayerTransform
     {
@@ -33,6 +36,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        _scene = SceneManager.GetActiveScene();
         if (instance == null) { instance = this; }
         else if (instance != this)
         {
@@ -81,6 +85,23 @@ public class GameManager : MonoBehaviour
                 break;
         }
     }
+
+    public void TogglePause(bool turnOn)
+    {
+        if (pauseUI)
+        {
+            if (turnOn)
+            {
+                pauseUI.SetActive(true);
+                Time.timeScale = 0;
+            }
+            else
+            {
+                pauseUI.SetActive(false);
+                Time.timeScale = 1;
+            }
+        }
+    }
     public void IncrementCombo()
     {
         currentCombo += comboIncrement;
@@ -112,5 +133,10 @@ public class GameManager : MonoBehaviour
         }
 
         _gaugeUI.UpdateGauge(currentCombo);
+    }
+
+    public void ReloadScene()
+    { 
+        SceneManager.LoadScene(_scene.name);
     }
 }

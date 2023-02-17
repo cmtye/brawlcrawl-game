@@ -48,9 +48,11 @@ public class HealthBehavior : MonoBehaviour
             GameManager.instance.UpdateHealthUI(currentHealth);
         }
         EmitDamageFX();
-        
-        if (currentHealth <= 0) 
+
+        if (currentHealth <= 0)
+        {
             Die();
+        }
     }
 
     public float GetHealth() { return currentHealth; }
@@ -85,6 +87,11 @@ public class HealthBehavior : MonoBehaviour
             
             Destroy(gameObject, 1f);
         }
+        var player = GetComponent<PlayerController>();
+        if (player)
+        {
+            StartCoroutine(TurnOnPause(true));
+        }
     }
     
     
@@ -99,6 +106,16 @@ public class HealthBehavior : MonoBehaviour
         }
     }
 
+    private IEnumerator TurnOnPause(bool value)
+    {
+        var elapsed = 0.0f;
+        while (elapsed < 1f)
+        {
+            elapsed += Time.deltaTime;
+            yield return 0;
+        }
+        GameManager.instance.TogglePause(value);
+    }
     private IEnumerator DeactivateAnimation(PlayerController player)
     {
         var elapsed = 0.0f;

@@ -47,10 +47,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private List<GameObject> abilityIndicators;
     private List<MeshRenderer> _abilityRenderers;
     private Animator _playerAnimator;
+    private bool _isPaused;
 
 
     private void Awake()
     {
+        _isPaused = false;
         _playerControls = new PlayerInputActions();
         _characterMovement = GetComponent<CharacterMovement>();
         _characterController = GetComponent<CharacterController>();
@@ -59,7 +61,8 @@ public class PlayerController : MonoBehaviour
         _playerControls.Player.Move.started += OnMovementInput;
         _playerControls.Player.Move.canceled += OnMovementInput;
         _playerControls.Player.Move.performed += OnMovementInput;
-        
+
+        _playerControls.Player.Pause.performed += _ => OnPause();
         _playerControls.Player.Punch.performed += _ => Punch(false);
         _playerControls.Player.Kick.performed += _ => Kick(false);
         _playerControls.Player.Counter.performed += _ => CounterAttack();
@@ -75,9 +78,22 @@ public class PlayerController : MonoBehaviour
         foreach (var g in abilityIndicators)
             _abilityRenderers.Add(g.GetComponent<MeshRenderer>());
 
-        
     }
 
+    private void OnPause()
+    {
+        if (_isPaused)
+        {
+            GameManager.instance.TogglePause(false);
+            _isPaused = false;
+        }
+        else
+        {
+            GameManager.instance.TogglePause(true);
+            _isPaused = true;
+        }
+    }
+    
     private void OnMovementInput(InputAction.CallbackContext context)
     {
         _moveDirectionInput = context.ReadValue<Vector2>();
@@ -116,7 +132,7 @@ public class PlayerController : MonoBehaviour
 
 
     //Allows animations finish there keyframes before reseting to there next state
-    IEnumerator Test()
+    IEnumerator DeactivateAnimation()
     {
         yield return new WaitForSeconds(0.21f);
         _playerAnimator.SetBool("isKicking", false);
@@ -132,14 +148,11 @@ public class PlayerController : MonoBehaviour
 
         //When punch method is called, run Vira's animation to punch equal to true
         _playerAnimator.SetBool("isPunching", true);
-
-
-            _abilityRenderers[0].enabled = true;
+        
         // Create capsule collider instead of sphere for better feeling Z-axis hit registration.
         var overlaps = Physics.OverlapCapsuleNonAlloc(_punchBack.position, 
             _punchFront.position, attackRange, _hitColliders, attackableLayers);
-
-
+        
         // Increment combo if you hit an enemy.
         if (overlaps >= 1)
             if (GameManager.instance)
@@ -149,9 +162,6 @@ public class PlayerController : MonoBehaviour
         _healthBehavior.counteredAttack = false;
         Invoke(nameof(DeactivateRenderer), 0.2f);
         _actionDelay = Time.time + 1f / attackRate;
-
-
-        
     }
     private void Kick(bool noDelay)
     {
@@ -160,10 +170,9 @@ public class PlayerController : MonoBehaviour
         if (_characterMovement.isCountering && !noDelay) 
             return;
 
-            _playerAnimator.SetBool("isKicking", true);
+        _playerAnimator.SetBool("isKicking", true);
 
-
-        _abilityRenderers[1].enabled = true;
+        
         var overlaps = Physics.OverlapCapsuleNonAlloc(_kickBack.position,
             _kickFront.position, attackRange, _hitColliders, attackableLayers);
         if (overlaps >= 1)
@@ -267,18 +276,11 @@ public class PlayerController : MonoBehaviour
     {
         foreach (var r in _abilityRenderers)
             r.enabled = false;
-        /*
-        var elapsed = 0f;
-        while(elapsed < 2f)
-        {
-            elapsed += Time.deltaTime;
-        }
-        */
-        StartCoroutine(Test());
+        
+        StartCoroutine(DeactivateAnimation());
 
 
     }
-
     public Animator GetAnimator()
     {
         return _playerAnimator;

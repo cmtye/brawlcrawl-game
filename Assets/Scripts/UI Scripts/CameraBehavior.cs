@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class CameraBehavior : MonoBehaviour
 {
@@ -14,6 +16,7 @@ public class CameraBehavior : MonoBehaviour
     private Vector3 _targetPosition;
     private int _oldHitsNumber;
     private Camera _parentCamera;
+    private bool _isShaking;
     
     public Transform target;
 

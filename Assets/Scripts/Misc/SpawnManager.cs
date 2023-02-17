@@ -20,6 +20,7 @@ public class SpawnManager : MonoBehaviour
     
     private void StartArena()
     {
+        _waveIndex = 0;
         GameManager.instance.SetCameraTarget(transform, spawnerOffset, false);
         lockEntry.SetActive(true);
         lockExit.SetActive(true);
@@ -34,6 +35,7 @@ public class SpawnManager : MonoBehaviour
             if (constantSpawn) _waveIndex = 0;
             if (_waveIndex != 0) { yield return new WaitForSeconds(waveDelay); }
 
+            Debug.Log("Wave here");
             yield return SpawnWaveRoutine();
             yield return new WaitForSeconds(waveDelay);
             _waveIndex++;
@@ -41,7 +43,7 @@ public class SpawnManager : MonoBehaviour
         GameManager.instance.SetCameraTarget(FindObjectOfType<PlayerController>().transform, Vector3.zero, true);
         lockEntry.SetActive(false);
         lockExit.SetActive(false);
-        Destroy(gameObject, 1f);
+        Destroy(gameObject, 0.2f);
     }
     
     private IEnumerator SpawnWaveRoutine()
@@ -58,7 +60,9 @@ public class SpawnManager : MonoBehaviour
         {
             var enemyPrefab = currentWave.enemyPrefabs[_spawnIndex];
             var spawnerTransform = transform;
-            Instantiate(enemyPrefab, spawnerTransform.position, spawnerTransform.rotation);
+            var spawnPoint = spawnerTransform.position;
+            spawnPoint.y -= 2;
+            Instantiate(enemyPrefab, spawnPoint, spawnerTransform.rotation);
 
             _spawnIndex++;
             yield return new WaitForSeconds(spawnDelay);

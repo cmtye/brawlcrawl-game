@@ -18,7 +18,7 @@ public class HealthUIController : MonoBehaviour
     // Randomly changes color of gauge fill for now.
     public void UpdateHealth(float value)
     {
-        if (!_isShaking) StartCoroutine(Shake(0.1f, 10f));
+        if (!_isShaking) StartCoroutine(Shake(0.1f, 15f));
         _fill.fillAmount = value;
     }
 

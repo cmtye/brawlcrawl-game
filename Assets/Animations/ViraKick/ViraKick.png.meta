@@ -125,7 +125,7 @@ TextureImporter:
         width: 201
         height: 340
       alignment: 9
-      pivot: {x: 0.5, y: 0.75}
+      pivot: {x: 0.5, y: 0.55}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -146,7 +146,7 @@ TextureImporter:
         width: 201
         height: 267
       alignment: 9
-      pivot: {x: 0.5, y: 0.75}
+      pivot: {x: 0.5, y: 0.65}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -185,7 +185,7 @@ TextureImporter:
         serializedVersion: 2
         x: 646
         y: 25
-        width: 375
+        width: 346
         height: 236
       alignment: 9
       pivot: {x: 0.5, y: 0.75}
@@ -196,174 +196,6 @@ TextureImporter:
       bones: []
       spriteID: 06f292dded81217429ea7ce1fec14aa0
       internalID: -571605813
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ViraKick_1
-      rect:
-        serializedVersion: 2
-        x: 382
-        y: 320
-        width: 8
-        height: 4
-      alignment: 9
-      pivot: {x: 0.5, y: 0.75}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: f46fbf75e68167d45b9aa006b6f8cd64
-      internalID: 711794470
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ViraKick_2
-      rect:
-        serializedVersion: 2
-        x: 1123
-        y: 308
-        width: 8
-        height: 17
-      alignment: 9
-      pivot: {x: 0.5, y: 0.75}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: ddec3c7dc5db87443980bc8610177967
-      internalID: 1274285085
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ViraKick_3
-      rect:
-        serializedVersion: 2
-        x: 1081
-        y: 306
-        width: 16
-        height: 10
-      alignment: 9
-      pivot: {x: 0.5, y: 0.75}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: a03dd4a631ae5484b8e01b6cfdea873f
-      internalID: 1375989263
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ViraKick_4
-      rect:
-        serializedVersion: 2
-        x: 398
-        y: 275
-        width: 16
-        height: 9
-      alignment: 9
-      pivot: {x: 0.5, y: 0.75}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 6b5f79ade401e6540b964351cd71e303
-      internalID: -461406231
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ViraKick_5
-      rect:
-        serializedVersion: 2
-        x: 434
-        y: 275
-        width: 13
-        height: 15
-      alignment: 9
-      pivot: {x: 0.5, y: 0.75}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 64f1073d7401ab741afab11c7e7f5ec9
-      internalID: -1176338057
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ViraKick_6
-      rect:
-        serializedVersion: 2
-        x: 748
-        y: 276
-        width: 16
-        height: 9
-      alignment: 9
-      pivot: {x: 0.5, y: 0.75}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: f8c7615695d5d114f9dbdfc8d3eb4700
-      internalID: -237012099
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ViraKick_7
-      rect:
-        serializedVersion: 2
-        x: 784
-        y: 276
-        width: 13
-        height: 15
-      alignment: 9
-      pivot: {x: 0.5, y: 0.75}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: abc69882858b3554a85e3ed0e075230a
-      internalID: 12918324
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: ViraKick_9
-      rect:
-        serializedVersion: 2
-        x: 238
-        y: 199
-        width: 25
-        height: 8
-      alignment: 9
-      pivot: {x: 0.5, y: 0.75}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: f3ef4d3b20cf7b840aa57769b3b45bff
-      internalID: -1716488352
       vertices: []
       indices: 
       edges: []
@@ -383,6 +215,7 @@ TextureImporter:
       ViraKick_9: -1716488352
       ViraKick_11: -571605813
       ViraKick_7: 12918324
+      ViraKick_12: -1892797312
       ViraKick_3: 1375989263
       ViraKick_2: 1274285085
       ViraKick_0: -96346065
