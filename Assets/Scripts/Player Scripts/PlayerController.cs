@@ -120,9 +120,11 @@ public class PlayerController : MonoBehaviour
 
         //Set animator to run Vira's running animation if Vira is not countering
         //and she is in process of moving
-        _playerAnimator.SetBool("isRunning", !_characterMovement.isCountering && _isMovementPressed);
+        if (Time.timeScale == 1f)
+        {
+            _playerAnimator.SetBool("isRunning", !_characterMovement.isCountering && _isMovementPressed);
+        }
 
-               
         if (!_healthBehavior.counteredAttack) return;
         StopCoroutine(_counterCoroutine);
         _characterMovement.EndCounter();
@@ -147,7 +149,7 @@ public class PlayerController : MonoBehaviour
             return;
 
         //When punch method is called, run Vira's animation to punch equal to true
-        _playerAnimator.SetBool("isPunching", true);
+        _playerAnimator.SetBool("isPunching", Time.timeScale == 1f);
         
         // Create capsule collider instead of sphere for better feeling Z-axis hit registration.
         var overlaps = Physics.OverlapCapsuleNonAlloc(_punchBack.position, 
@@ -170,7 +172,7 @@ public class PlayerController : MonoBehaviour
         if (_characterMovement.isCountering && !noDelay) 
             return;
 
-        _playerAnimator.SetBool("isKicking", true);
+        _playerAnimator.SetBool("isKicking", Time.timeScale == 1f);
 
         
         var overlaps = Physics.OverlapCapsuleNonAlloc(_kickBack.position,
@@ -185,7 +187,8 @@ public class PlayerController : MonoBehaviour
     private void CounterAttack()
     {
         // TODO: Maybe rework this and make it better.
-        if (!_characterController.isGrounded || _characterMovement.isCountering || Time.time < _actionDelay) 
+        if (!_characterController.isGrounded || _characterMovement.isCountering || Time.time < _actionDelay ||
+            Time.timeScale == 0) 
             return;
         if (_counterCoroutine != null) return;
         _counterCoroutine = _characterMovement.Counter();
@@ -197,7 +200,7 @@ public class PlayerController : MonoBehaviour
         if (!(Time.time >= _actionDelay)) 
             return;
 
-        if (_characterMovement.isCountering) 
+        if (_characterMovement.isCountering || Time.timeScale == 0) 
             return;
         var currentCombo = GameManager.instance.GetCombo();
         int overlaps;

@@ -88,7 +88,7 @@ public class AIController : MonoBehaviour
         _spriteRenderer.color = Color.red;
         foreach (var r in GetComponentsInChildren<MeshRenderer>())
         {
-            if (r.CompareTag("EditorOnly")) r.enabled = true;
+            if (r.CompareTag("Indicator")) r.enabled = true;
         }
         var elapsed = 0.0f;
         while (elapsed < value)
@@ -100,7 +100,7 @@ public class AIController : MonoBehaviour
         _spriteRenderer.color = holdColor;
         foreach (var r in GetComponentsInChildren<MeshRenderer>())
         {
-            if (r.CompareTag("EditorOnly")) r.enabled = false;
+            if (r.CompareTag("Indicator")) r.enabled = false;
         }
 
     }

@@ -9688,7 +9688,7 @@ GameObject:
   - component: {fileID: 3807947617915641171}
   m_Layer: 0
   m_Name: Bomb
-  m_TagString: EditorOnly
+  m_TagString: Indicator
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10054,7 +10054,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackRange: 2
   attackStateCooldown: 1.5
-  visionRadius: 4
+  visionRadius: 5
   wanderRadius: 1
   navMeshMask: -1
   attackDelay: 2

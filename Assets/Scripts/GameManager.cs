@@ -36,6 +36,9 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        Time.timeScale = 1f;
         _scene = SceneManager.GetActiveScene();
         if (instance == null) { instance = this; }
         else if (instance != this)
@@ -43,8 +46,6 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        
-        DontDestroyOnLoad(gameObject);
         
         currentCombo = 0;
         var playerScript = FindObjectOfType<PlayerController>();
@@ -92,11 +93,15 @@ public class GameManager : MonoBehaviour
         {
             if (turnOn)
             {
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
                 pauseUI.SetActive(true);
                 Time.timeScale = 0;
             }
             else
             {
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
                 pauseUI.SetActive(false);
                 Time.timeScale = 1;
             }
@@ -137,6 +142,6 @@ public class GameManager : MonoBehaviour
 
     public void ReloadScene()
     { 
-        SceneManager.LoadScene(_scene.name);
+        SceneManager.LoadScene(_scene.buildIndex);
     }
 }
