@@ -38,9 +38,12 @@ public class HealthBehavior : MonoBehaviour
         // Only resets combo if the hit object has a player controller.
         
         currentHealth -= damage * armorMultiplier;
-        if (GetComponent<PlayerController>())
+        var player = GetComponent<PlayerController>();
+        if (player)
         {
-            Debug.Log(currentHealth);
+            var animator = player.GetAnimator();
+            animator.SetBool("isHurt", true);
+            StartCoroutine(DeactivateAnimation(player));
             GameManager.instance.ResetCombo();
             GameManager.instance.UpdateHealthUI(currentHealth);
         }
@@ -94,5 +97,17 @@ public class HealthBehavior : MonoBehaviour
         {
             r.enabled = false;
         }
+    }
+
+    private IEnumerator DeactivateAnimation(PlayerController player)
+    {
+        var elapsed = 0.0f;
+        while (elapsed < 0.3f)
+        {
+            elapsed += Time.deltaTime;
+            yield return 0;
+        }
+        player.GetAnimator().SetBool("isHurt", false);
+        yield return 0;
     }
 }

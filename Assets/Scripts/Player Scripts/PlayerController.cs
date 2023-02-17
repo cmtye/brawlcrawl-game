@@ -112,8 +112,6 @@ public class PlayerController : MonoBehaviour
         _characterMovement.EndCounter();
         Punch(true);
         Kick(true);
-
-        
     }
 
 
@@ -281,5 +279,9 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    public Animator GetAnimator()
+    {
+        return _playerAnimator;
+    }
     public HealthBehavior GetHealthBehavior() { return _healthBehavior; }
 }
