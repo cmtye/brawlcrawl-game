@@ -9,6 +9,10 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private float spawnDelay = 2f;
     [SerializeField] private float waveDelay = 5f;
     [SerializeField] private bool constantSpawn;
+    [SerializeField] private Vector3 spawnerOffset;
+    [SerializeField] private GameObject lockEntry;
+    [SerializeField] private GameObject lockExit;
+    private Transform _playerReference;
     private bool _started;
 
     private int _waveIndex;
@@ -16,6 +20,9 @@ public class SpawnManager : MonoBehaviour
     
     private void StartArena()
     {
+        GameManager.instance.SetCameraTarget(transform, spawnerOffset, false);
+        lockEntry.SetActive(true);
+        lockExit.SetActive(true);
         _started = true;
         StartCoroutine(StartWavesRoutine());
     }
@@ -31,6 +38,9 @@ public class SpawnManager : MonoBehaviour
             yield return new WaitForSeconds(waveDelay);
             _waveIndex++;
         }
+        GameManager.instance.SetCameraTarget(FindObjectOfType<PlayerController>().transform, Vector3.zero, true);
+        lockEntry.SetActive(false);
+        lockExit.SetActive(false);
         Destroy(gameObject, 1f);
     }
     

@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject healthUI;
     [SerializeField] private int currentCombo;
     [SerializeField] private int comboIncrement;
+    [SerializeField] private Camera mainCamera;
     private GaugeUIController _gaugeUI;
     private HealthUIController _healthUI;
     public static GameManager instance;
@@ -50,6 +51,10 @@ public class GameManager : MonoBehaviour
         if (healthUI) _healthUI = healthUI.GetComponent<HealthUIController>();
     }
 
+    public void SetCameraTarget(Transform value, Vector3 newOffset, bool isPlayer)
+    {
+        mainCamera.GetComponent<CameraBehavior>().ChangeTarget(value, newOffset, isPlayer);
+    }
     public int GetCombo() { return currentCombo; }
 
     public void UpdateHealthUI(int value)

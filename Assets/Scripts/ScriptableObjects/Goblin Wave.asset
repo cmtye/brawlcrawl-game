@@ -12,14 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e62cd781efaf4241b1e73ce85f8e748, type: 3}
   m_Name: Goblin Wave
   m_EditorClassIdentifier: 
-  name: Goblin Wave 9
+  name: Goblin Wave 5
   enemyPrefabs:
-  - {fileID: 6065488485200795068, guid: 575242c62fa56b34e82dcc614999bb81, type: 3}
-  - {fileID: 6065488485200795068, guid: 575242c62fa56b34e82dcc614999bb81, type: 3}
-  - {fileID: 6065488485200795068, guid: 575242c62fa56b34e82dcc614999bb81, type: 3}
-  - {fileID: 6065488485200795068, guid: 575242c62fa56b34e82dcc614999bb81, type: 3}
-  - {fileID: 6065488485200795068, guid: 575242c62fa56b34e82dcc614999bb81, type: 3}
-  - {fileID: 6065488485200795068, guid: 575242c62fa56b34e82dcc614999bb81, type: 3}
-  - {fileID: 6065488485200795068, guid: 575242c62fa56b34e82dcc614999bb81, type: 3}
-  - {fileID: 6065488485200795068, guid: 575242c62fa56b34e82dcc614999bb81, type: 3}
-  - {fileID: 6065488485200795068, guid: 575242c62fa56b34e82dcc614999bb81, type: 3}
+  - {fileID: 3807947618296309031, guid: 575242c62fa56b34e82dcc614999bb81, type: 3}
+  - {fileID: 3807947618296309031, guid: 575242c62fa56b34e82dcc614999bb81, type: 3}
+  - {fileID: 3807947618296309031, guid: 575242c62fa56b34e82dcc614999bb81, type: 3}
+  - {fileID: 3807947618296309031, guid: 575242c62fa56b34e82dcc614999bb81, type: 3}
+  - {fileID: 3807947618296309031, guid: 575242c62fa56b34e82dcc614999bb81, type: 3}
