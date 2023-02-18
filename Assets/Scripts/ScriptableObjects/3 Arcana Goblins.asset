@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e62cd781efaf4241b1e73ce85f8e748, type: 3}
+  m_Name: 3 Arcana Goblins
+  m_EditorClassIdentifier: 
+  name: MiniBoss Wave
+  enemyPrefabs:
+  - {fileID: 551993553246728889, guid: 52b78c32a79448349b79f9ffa1a3ff23, type: 3}
+  - {fileID: 551993553246728889, guid: 52b78c32a79448349b79f9ffa1a3ff23, type: 3}
+  - {fileID: 551993553246728889, guid: 52b78c32a79448349b79f9ffa1a3ff23, type: 3}

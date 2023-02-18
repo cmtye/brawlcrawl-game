@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Player_Scripts;
+using UI_Scripts;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -10,13 +12,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject healthUI;
     [SerializeField] private int currentCombo;
     [SerializeField] private int comboIncrement;
-    [SerializeField] private Camera mainCamera;
+    [SerializeField] private Camera cameraObject;
     [SerializeField] private GameObject pauseUI;
     private GaugeUIController _gaugeUI;
     private HealthUIController _healthUI;
     public static GameManager instance;
     private static GameObject _player;
     private List<int> _playerAbilityThresholds;
+    private CameraBehavior _cameraBehavior;
     [SerializeField] private Transform playerTransform;
 
     private bool _isPlayerTransformCached;
@@ -36,6 +39,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        _cameraBehavior = cameraObject.GetComponent<CameraBehavior>();
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
         Time.timeScale = 1f;
@@ -56,9 +60,13 @@ public class GameManager : MonoBehaviour
         if (healthUI) _healthUI = healthUI.GetComponent<HealthUIController>();
     }
 
+    public void SetShakeCamera()
+    {
+        _cameraBehavior.ShakeCamera();
+    }
     public void SetCameraTarget(Transform value, Vector3 newOffset, bool isPlayer)
     {
-        mainCamera.GetComponent<CameraBehavior>().ChangeTarget(value, newOffset, isPlayer);
+        _cameraBehavior.ChangeTarget(value, newOffset, isPlayer);
     }
     public int GetCombo() { return currentCombo; }
 

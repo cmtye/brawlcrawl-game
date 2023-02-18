@@ -1,130 +1,137 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
-public class HealthBehavior : MonoBehaviour
+namespace Player_Scripts
 {
-    [SerializeField] private int maxHealth;
-    // Multiplies incoming damage by this value. 0 = no damage, 1 = full damage, 2 = double damage.
-    [SerializeField] private int armorMultiplier = 1;
-    public int currentHealth;
-    public bool counteredAttack;
+    public class HealthBehavior : MonoBehaviour
+    {
+        // The characters health and retaliation related variables.
+        [SerializeField] private int maxHealth;
+        [SerializeField] private int incomingDamageMultiplier = 1;
+        public int currentHealth;
+        public bool counteredAttack;
     
-    private CharacterMovement _characterMovement;
-    private CharacterController _characterController;
+        // Get character movement scripts if available to inform about retaliation.
+        private CharacterMovement _characterMovement;
+        private CharacterController _characterController;
+        private PlayerController _playerController;
 
-    // Particle systems added as the objects child and set in editor.
-    [SerializeField] private ParticleSystem damageFX;
-    [SerializeField] private ParticleSystem destroyFX;
+        // Animations and particle systems added as the objects child and set in editor
+        // to show an object getting hit and losing all its health points.
+        [SerializeField] private ParticleSystem damageFX;
+        [SerializeField] private ParticleSystem destroyFX;
+        private static readonly int Hurt = Animator.StringToHash("Hurt");
 
-    private void Awake()
-    {
-        currentHealth = maxHealth;
-        _characterMovement = GetComponent<CharacterMovement>();
-        _characterController = GetComponent<CharacterController>();
-    }
-    public void TakeDamage(int damage)
-    {
-        if (_characterMovement)
-            if (_characterMovement.isCountering)
-            {
-                // TODO: Clean up this mechanic. Multiple hits give counter chain currently. Not happy with it.
-                counteredAttack = true;
-                return;
-            }
-
-        // Only resets combo if the hit object has a player controller.
-        
-        currentHealth -= damage * armorMultiplier;
-        var player = GetComponent<PlayerController>();
-        if (player)
+        private void Awake()
         {
-            var animator = player.GetAnimator();
-            animator.SetBool("isHurt", true);
-            StartCoroutine(DeactivateAnimation(player));
-            GameManager.instance.ResetCombo();
-            GameManager.instance.UpdateHealthUI(currentHealth);
-        }
-        EmitDamageFX();
-
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
-    }
-
-    public float GetHealth() { return currentHealth; }
-    public float GetMaxHealth() { return maxHealth; }
-    public void GainHealth(int healing)
-    {
-        currentHealth += healing;
-        if (currentHealth > maxHealth)
-        {
+            _characterMovement = GetComponent<CharacterMovement>();
+            _characterController = GetComponent<CharacterController>();
+            _playerController = GetComponent<PlayerController>();
             currentHealth = maxHealth;
         }
-    }
-    private void Die()
-    {
-        // Give sprite actors the appearance of falling over when dying.
-        if (_characterMovement)
+        
+        public void TakeDamage(int damage)
         {
-            _characterController.enabled = false;
-            Invoke(nameof(EmitDestroyedFX), 0.2f);
-            Invoke(nameof(DeactivateRenderer), 0.3f);
-            Destroy(gameObject, 1.2f);
-        }
-        // Breakables handles slightly differently than actors.
-        else
-        {
-            EmitDestroyedFX();
-            DeactivateRenderer();
-            foreach (var c in GetComponents<Collider>())
+            // Set variable for retaliation if in counter state.
+            if (_characterMovement)
+                if (_characterMovement.isCountering)
+                {
+                    counteredAttack = true;
+                    return;
+                }
+            
+            // Alter game state if the hit object is the player.
+            if (_playerController)
             {
-                c.enabled = false;
+                var animator = _playerController.GetAnimator();
+                animator.SetTrigger(Hurt);
+                
+                GameManager.instance.ResetCombo();
+                GameManager.instance.UpdateHealthUI(currentHealth);
+                GameManager.instance.SetShakeCamera();
             }
             
-            Destroy(gameObject, 1f);
+            currentHealth -= damage * incomingDamageMultiplier;
+            EmitDamageFX();
+            if (currentHealth <= 0)
+            {
+                Die();
+            }
         }
-        var player = GetComponent<PlayerController>();
-        if (player)
+        
+        private void Die()
         {
-            StartCoroutine(TurnOnPause(true));
+            // If an enemy dies, destroy their in progress ability renders.
+            if (CompareTag("Enemy"))
+            {
+                foreach (Transform t in transform)
+                {
+                    if (t.name is "Progress" or "Outline")
+                    {
+                        Destroy(t.gameObject);
+                    }
+                }
+            }
+            
+            // When the object dies, we need the particle system to
+            // function before destroying them.
+            if (_characterMovement)
+            {
+                _characterController.enabled = false;
+                Invoke(nameof(EmitDestroyedFX), 0.2f);
+                Invoke(nameof(DeactivateRenderer), 0.3f);
+                Destroy(gameObject, 1.2f);
+            }
+            // Breakables handles slightly differently than characters.
+            else
+            {
+                EmitDestroyedFX();
+                DeactivateRenderer();
+                foreach (var c in GetComponents<Collider>())
+                {
+                    c.enabled = false;
+                }
+            
+                Destroy(gameObject, 1f);
+            }
+            
+            // Send player to game over screen when they die.
+            if (_playerController)
+            {
+                StartCoroutine(TurnOnPause(true));
+            }
         }
-    }
-    
-    
-    private void EmitDamageFX() { if (damageFX) damageFX.Play(); }
-    private void EmitDestroyedFX() { if (destroyFX) destroyFX.Play(); }
-    
-    private void DeactivateRenderer()
-    {
-        foreach (var r in GetComponents<Renderer>())
-        {
-            r.enabled = false;
-        }
-    }
 
-    private IEnumerator TurnOnPause(bool value)
-    {
-        var elapsed = 0.0f;
-        while (elapsed < 1f)
+        public float GetHealth() { return currentHealth; }
+        public float GetMaxHealth() { return maxHealth; }
+        public void GainHealth(int healing)
         {
-            elapsed += Time.deltaTime;
-            yield return 0;
+            currentHealth += healing;
+            if (currentHealth > maxHealth)
+            {
+                currentHealth = maxHealth;
+            }
         }
-        GameManager.instance.TogglePause(value);
-    }
-    private IEnumerator DeactivateAnimation(PlayerController player)
-    {
-        var elapsed = 0.0f;
-        while (elapsed < 0.3f)
+        
+        // When a player dies, let destruction particles emit before pausing the game.
+        private IEnumerator TurnOnPause(bool value)
         {
-            elapsed += Time.deltaTime;
-            yield return 0;
+            var elapsed = 0.0f;
+            while (elapsed < 1f)
+            {
+                elapsed += Time.deltaTime;
+                yield return 0;
+            }
+            GameManager.instance.TogglePause(value);
         }
-        player.GetAnimator().SetBool("isHurt", false);
-        yield return 0;
+        private void DeactivateRenderer()
+        {
+            foreach (var r in GetComponents<Renderer>())
+            {
+                r.enabled = false;
+            }
+        }
+        private void EmitDamageFX() { if (damageFX) damageFX.Play(); }
+        private void EmitDestroyedFX() { if (destroyFX) destroyFX.Play(); }
     }
 }

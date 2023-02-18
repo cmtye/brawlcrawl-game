@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public abstract class AIState : ScriptableObject
+namespace AI_Scripts
 {
-    public abstract void Execute(AIController controller);
+    public abstract class AIState : ScriptableObject
+    {
+        public abstract void Execute(AIController controller);
+    }
 }

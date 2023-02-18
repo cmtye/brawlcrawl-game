@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Player_Scripts;
 using UnityEngine;
 
 public class HealthBar : MonoBehaviour 

@@ -1,292 +1,263 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+namespace Player_Scripts
 {
-    // 2019 Unity input system components. Allows easy gamepad configuration.
-    private PlayerInputActions _playerControls;
-    private InputAction _move;
+    public class PlayerController : MonoBehaviour
+    {
+        // The players movement and input variables.
+        private PlayerInputActions _playerControls;
+        private CharacterMovement _characterMovement;
+        private CharacterController _characterController;
+        private Vector2 _moveDirectionInput;
+        private Vector3 _moveDirection;
+        private bool _isMovementPressed;
+        private bool _isPausePressed;
 
-    // General character movement script that we feed axis values into.
-    private CharacterMovement _characterMovement;
-    private CharacterController _characterController;
-    private Vector2 _moveDirectionInput;
-    private Vector3 _moveDirection;
-    private bool _isMovementPressed;
-    //private Vector2 _currentInput;
-    //private Vector2 _smoothInput;
-    //private bool _groundedPlayer;
-    //private Vector3 _playerVelocity;
+        // The players combat values and attacking state variables.
+        [SerializeField] private float attackRate = 2f;
+        [SerializeField] private float attackRange = 0.5f;
+        [SerializeField] private int attackDamage = 2;
+        [SerializeField] private List<Transform> punchPoints;
+        [SerializeField] private List<Transform> kickPoints;
+        [SerializeField] private LayerMask attackableLayers;
+        public List<int> abilityThresholds;
+        private HealthBehavior _healthBehavior;
+        private IEnumerator _counterCoroutine;
+        private float _actionDelay;
 
-    private HealthBehavior _healthBehavior;
-
-    // Generalized attack stats. Can easily be altered for designers.
-    [SerializeField] private float attackRate = 2f;
-    [SerializeField] private float attackRange = 0.5f;
-    [SerializeField] private int attackDamage = 2;
-    private float _actionDelay;
-    private IEnumerator _counterCoroutine;
-
-    // Transform points for attack colliders. The two points form a capsule collider.
-    [SerializeField] private List<Transform> punchPoints;
-    [SerializeField] private List<Transform> kickPoints;
-    private Transform _punchBack;
-    private Transform _punchFront;
-    private Transform _kickBack;
-    private Transform _kickFront;
-
-    public List<int> abilityThresholds;
+        // Collision array to store attacks landing on an enemy/object.
+        // Pre-allocation saves garbage collecting time later.
+        private readonly Collider[] _hitColliders = new Collider[40];
     
-    // Collision variables for attacks landing on an enemy/object. Pre-allocation saves garbage collecting time later.
-    [SerializeField] private LayerMask attackableLayers;
-    private readonly Collider[] _hitColliders = new Collider[20];
-
-    [SerializeField] private List<GameObject> abilityIndicators;
-    private List<MeshRenderer> _abilityRenderers;
-    private Animator _playerAnimator;
-    private bool _isPaused;
-
-
-    private void Awake()
-    {
-        _isPaused = false;
-        _playerControls = new PlayerInputActions();
-        _characterMovement = GetComponent<CharacterMovement>();
-        _characterController = GetComponent<CharacterController>();
-        _healthBehavior = GetComponent<HealthBehavior>();
-
-        _playerControls.Player.Move.started += OnMovementInput;
-        _playerControls.Player.Move.canceled += OnMovementInput;
-        _playerControls.Player.Move.performed += OnMovementInput;
-
-        _playerControls.Player.Pause.performed += _ => OnPause();
-        _playerControls.Player.Punch.performed += _ => Punch(false);
-        _playerControls.Player.Kick.performed += _ => Kick(false);
-        _playerControls.Player.Counter.performed += _ => CounterAttack();
-        _playerControls.Player.Ability.performed += _ => Ability();
+        // The players animation variables.
+        private Animator _playerAnimator;
+        private static readonly int IsRunning = Animator.StringToHash("isRunning");
+        private static readonly int Punch1 = Animator.StringToHash("Punch");
+        private static readonly int Kick1 = Animator.StringToHash("Kick");
         
-        _punchBack = punchPoints[0];
-        _punchFront = punchPoints[1];
-        _kickBack = kickPoints[0];
-        _kickFront = kickPoints[1];
-
-        _playerAnimator = GetComponent<Animator>();
-        _abilityRenderers = new List<MeshRenderer>();
-        foreach (var g in abilityIndicators)
-            _abilityRenderers.Add(g.GetComponent<MeshRenderer>());
-
-    }
-
-    private void OnPause()
-    {
-        if (_isPaused)
+        private void Awake()
         {
-            GameManager.instance.TogglePause(false);
-            _isPaused = false;
+            _characterMovement = GetComponent<CharacterMovement>();
+            _characterController = GetComponent<CharacterController>();
+            _healthBehavior = GetComponent<HealthBehavior>();
+            _playerAnimator = GetComponent<Animator>();
+
+            _playerControls = new PlayerInputActions();
+            _playerControls.Player.Move.started += OnMovementInput;
+            _playerControls.Player.Move.canceled += OnMovementInput;
+            _playerControls.Player.Move.performed += OnMovementInput;
+            
+            _playerControls.Player.Punch.performed += _ => Punch(false);
+            _playerControls.Player.Kick.performed += _ => Kick(false);
+            _playerControls.Player.Counter.performed += _ => CounterAttack();
+            _playerControls.Player.Ability.performed += _ => Ability();
+            _playerControls.Player.Pause.performed += _ => OnPausePressed();
+            _isPausePressed = false;
         }
-        else
+        
+        private void Update()
         {
-            GameManager.instance.TogglePause(true);
-            _isPaused = true;
+            _characterMovement.Move(_moveDirection);
+
+            // Set animator to run Vira's running animation if Vira is not
+            // countering and she is in process of moving while not paused.
+            if (Time.timeScale != 0)
+            {
+                _playerAnimator.SetBool(IsRunning, !_characterMovement.isCountering && _isMovementPressed);
+            }
+
+            // Must set stored coroutine to null to avoid bad references.
+            if (_characterMovement.coroutineEnded)
+            {
+                _counterCoroutine = null;
+            }
+
+            // End counter coroutine if we've countered an attack.
+            if (!_healthBehavior.counteredAttack) return;
+            StopCoroutine(_counterCoroutine);
+            _characterMovement.EndCounter();
+        
+            // Kick and Punch for counter retaliation.
+            Punch(true);
+            Kick(true);
         }
-    }
+
+        private void Punch(bool noDelay)
+        {
+            // Check if the player can take action on call. noDelay boolean allows the counter to bypass action delay.
+            if (!(Time.time >= _actionDelay) && !noDelay) return;
+            if (_characterMovement.isCountering && !noDelay) return;
+
+            // If time is paused, don't take action.
+            if (Time.timeScale == 0) return;
+        
+            // Set trigger for player punch animation
+            _playerAnimator.SetTrigger(Punch1);
+        
+            // Create capsule collider instead of sphere for better feeling Z-axis hit registration.
+            var overlaps = Physics.OverlapCapsuleNonAlloc(punchPoints[0].position, 
+                punchPoints[1].position, attackRange, _hitColliders, attackableLayers);
+        
+            // Increment combo if you hit an enemy.
+            if (overlaps >= 1)
+            {
+                GameManager.instance.IncrementCombo();
+            }
+
+            // Iterate through array of enemies the attack overlapped with in method below.
+            TryDamageCollided(overlaps, attackDamage);
+        
+            // This method is called after a successful counter, so set variable to false when punch is complete.
+            _healthBehavior.counteredAttack = false;
+            _actionDelay = Time.time + 1f / attackRate;
+        }
     
-    private void OnMovementInput(InputAction.CallbackContext context)
-    {
-        _moveDirectionInput = context.ReadValue<Vector2>();
-        _moveDirection.x = _moveDirectionInput.x;
-        _moveDirection.z = _moveDirectionInput.y;
-        _isMovementPressed = _moveDirectionInput.x != 0 || _moveDirectionInput.y != 0;
-    }
-    private void OnEnable()
-    {
-        _playerControls.Player.Enable();
-    }
-    private void OnDisable()
-    {
-        _playerControls.Player.Disable();
-    }
-    private void Update()
-    {
-        // TODO: Move and alter attack delay logic to update for more persistent accessing.
-        
-        _characterMovement.Move(_moveDirection);
-
-        if (_characterMovement.coroutineEnded)
-            _counterCoroutine = null;
-
-        //Set animator to run Vira's running animation if Vira is not countering
-        //and she is in process of moving
-        if (Time.timeScale == 1f)
+        private void Kick(bool noDelay)
         {
-            _playerAnimator.SetBool("isRunning", !_characterMovement.isCountering && _isMovementPressed);
+            if (!(Time.time >= _actionDelay) && !noDelay) return;
+            if (_characterMovement.isCountering && !noDelay) return;
+            if (Time.timeScale == 0) return;
+        
+            // Set trigger for player kick animation
+            _playerAnimator.SetTrigger(Kick1);
+        
+            var overlaps = Physics.OverlapCapsuleNonAlloc(kickPoints[0].position,
+                kickPoints[1].position, attackRange, _hitColliders, attackableLayers);
+            if (overlaps >= 1)
+            {
+                GameManager.instance.IncrementCombo();
+            }
+
+            TryDamageCollided(overlaps, attackDamage);
+            _healthBehavior.counteredAttack = false;
+            _actionDelay = Time.time + 1f / attackRate;
+        }
+    
+        private void CounterAttack()
+        {
+            // Check if the player is in an actionable state.
+            if (!_characterController.isGrounded || _characterMovement.isCountering 
+                                                 || !(Time.time >= _actionDelay) || Time.timeScale == 0) return;
+
+            // If coroutine isn't null, we are already countering and can't begin a new one.
+            if (_counterCoroutine != null) return;
+
+            // Instantiate new counter coroutine and store it.
+            _counterCoroutine = _characterMovement.Counter();
+            StartCoroutine(_counterCoroutine);
+            _actionDelay = Time.time + 1f / attackRate;
+        }
+        
+        private void Ability()
+        {
+            // Check if the player is in an actionable state.
+            if (!(Time.time >= _actionDelay) || _characterMovement.isCountering || Time.timeScale == 0) 
+                return;
+        
+            var currentCombo = GameManager.instance.GetCombo();
+            int overlaps;
+            switch (currentCombo)
+            {
+                // Gauge is at max, give player massive damaging explosion.
+                case var _ when currentCombo >= abilityThresholds[2]:
+                    currentCombo -= abilityThresholds[2];
+                    GameManager.instance.SetCombo(currentCombo);
+                    
+                    overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 8,
+                        _hitColliders, attackableLayers);
+                    TryDamageCollided(overlaps, attackDamage * 8);
+                    break;
+            
+                // Gauge is at tier 2.
+                case var _ when currentCombo >= abilityThresholds[1]:
+                    currentCombo -= abilityThresholds[1];
+                    GameManager.instance.SetCombo(currentCombo);
+                
+                    overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 4,
+                        _hitColliders, attackableLayers);
+                    TryDamageCollided(overlaps, attackDamage * 2);
+                    break;
+            
+                // Gauge is at tier 1.
+                case var _ when currentCombo >= abilityThresholds[0]:
+                    currentCombo -= abilityThresholds[0];
+                    GameManager.instance.SetCombo(currentCombo);
+                
+                    overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 3,
+                        _hitColliders, attackableLayers);
+                    TryDamageCollided(overlaps, attackDamage);
+                    break;
+            
+                // Gauge is at tier 0.
+            }
+            _actionDelay = Time.time + 1f / attackRate;
         }
 
-        if (!_healthBehavior.counteredAttack) return;
-        StopCoroutine(_counterCoroutine);
-        _characterMovement.EndCounter();
-        Punch(true);
-        Kick(true);
-    }
-
-
-    //Allows animations finish there keyframes before reseting to there next state
-    IEnumerator DeactivateAnimation()
-    {
-        yield return new WaitForSeconds(0.21f);
-        _playerAnimator.SetBool("isKicking", false);
-        _playerAnimator.SetBool("isPunching", false);
-    }
-
-    private void Punch(bool noDelay)
-    {
-        if (!(Time.time >= _actionDelay) && !noDelay) 
-            return;
-        if (_characterMovement.isCountering && !noDelay) 
-            return;
-
-        //When punch method is called, run Vira's animation to punch equal to true
-        _playerAnimator.SetBool("isPunching", Time.timeScale == 1f);
-        
-        // Create capsule collider instead of sphere for better feeling Z-axis hit registration.
-        var overlaps = Physics.OverlapCapsuleNonAlloc(_punchBack.position, 
-            _punchFront.position, attackRange, _hitColliders, attackableLayers);
-        
-        // Increment combo if you hit an enemy.
-        if (overlaps >= 1)
-            if (GameManager.instance)
-                GameManager.instance.IncrementCombo();
-        // Iterate through array of enemies the attack overlapped with in method below.
-        DamageCollided(overlaps, attackDamage);
-        _healthBehavior.counteredAttack = false;
-        Invoke(nameof(DeactivateRenderer), 0.2f);
-        _actionDelay = Time.time + 1f / attackRate;
-    }
-    private void Kick(bool noDelay)
-    {
-        if (!(Time.time >= _actionDelay) && !noDelay) 
-            return;
-        if (_characterMovement.isCountering && !noDelay) 
-            return;
-
-        _playerAnimator.SetBool("isKicking", Time.timeScale == 1f);
-
-        
-        var overlaps = Physics.OverlapCapsuleNonAlloc(_kickBack.position,
-            _kickFront.position, attackRange, _hitColliders, attackableLayers);
-        if (overlaps >= 1)
-            if (GameManager.instance)
-                GameManager.instance.IncrementCombo();
-        DamageCollided(overlaps, attackDamage);
-        Invoke(nameof(DeactivateRenderer), 0.2f);
-        _actionDelay = Time.time + 1f / attackRate;
-    }
-    private void CounterAttack()
-    {
-        // TODO: Maybe rework this and make it better.
-        if (!_characterController.isGrounded || _characterMovement.isCountering || Time.time < _actionDelay ||
-            Time.timeScale == 0) 
-            return;
-        if (_counterCoroutine != null) return;
-        _counterCoroutine = _characterMovement.Counter();
-        StartCoroutine(_counterCoroutine);
-        _actionDelay = Time.time + 1f / attackRate;
-    }
-    private void Ability()
-    {
-        if (!(Time.time >= _actionDelay)) 
-            return;
-
-        if (_characterMovement.isCountering || Time.timeScale == 0) 
-            return;
-        var currentCombo = GameManager.instance.GetCombo();
-        int overlaps;
-        switch (currentCombo)
+        private void TryDamageCollided(int amountHit, int damage)
         {
-            case var _ when currentCombo >= abilityThresholds[2]:
-                // Gauge is at or past last threshold but not above
-                _abilityRenderers[4].enabled = true;
-                currentCombo -= abilityThresholds[2];
-                GameManager.instance.SetCombo(currentCombo);
-                
-                // Hard coded spherical explosion, may change or iterate on.
-                overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 8,
-                    _hitColliders, attackableLayers);
-                DamageCollided(overlaps, attackDamage * 8);
-                Invoke(nameof(DeactivateRenderer), 0.2f);
-                break;
+            // Make a list to store already struck enemies during this attack.
+            var alreadyHit = new List<int>();
+            for (var i = 0; i < amountHit; i++)
+            {
+                if (alreadyHit.Contains(_hitColliders[i].gameObject.GetInstanceID()))
+                    continue;
             
-            case var _ when currentCombo >= abilityThresholds[1]:
-                // Gauge is at or past second threshold but not above
-                _abilityRenderers[3].enabled = true;
-                currentCombo -= abilityThresholds[1];
-                GameManager.instance.SetCombo(currentCombo);
-                
-                overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 5,
-                    _hitColliders, attackableLayers);
-                DamageCollided(overlaps, attackDamage * 4);
-                Invoke(nameof(DeactivateRenderer), 0.2f);
-                break;
-            
-            case var _ when currentCombo >= abilityThresholds[0]:
-                // Gauge is at or past first threshold but not above
-                _abilityRenderers[2].enabled = true;
-                currentCombo -= abilityThresholds[0];
-                GameManager.instance.SetCombo(currentCombo);
-                
-                overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 3,
-                    _hitColliders, attackableLayers);
-                DamageCollided(overlaps, attackDamage * 2);
-                Invoke(nameof(DeactivateRenderer), 0.2f);
-                break;
-            
-            default:
-                Debug.Log("None");
-                // Gauge isn't high enough
-                break;
-        }
-
-        _actionDelay = Time.time + 1f / attackRate;
-    }
-
-    private void DamageCollided(int amountHit, int damage)
-    {
-        for (var i = 0; i < amountHit; i++)
-        {
-            var healthBar = _hitColliders[i].GetComponent<HealthBehavior>();
-            if (healthBar) 
+                // If the collider has an attached health behavior, deal damage.
+                var healthBar = _hitColliders[i].GetComponent<HealthBehavior>();
+                if (!healthBar) continue;
                 healthBar.TakeDamage(damage);
+                alreadyHit.Add(_hitColliders[i].gameObject.GetInstanceID());
+            }
         }
-    }
-    // Allows the transforms of attack points to be shown in the editor for designers. Debug only.
-    private void OnDrawGizmosSelected()
-    {
-        if (_punchBack == null || _kickBack == null || _punchFront == null || _kickFront == null)
-            return;
-
-        Gizmos.DrawWireSphere(_punchBack.position, attackRange);
-        Gizmos.DrawWireSphere(_punchFront.position, attackRange);
-        Gizmos.DrawWireSphere(_kickBack.position, attackRange);
-        Gizmos.DrawWireSphere(_kickFront.position, attackRange);
         
-        Gizmos.DrawWireSphere(transform.position, attackRange * 8);
-    }
+        private void OnPausePressed()
+        {
+            if (_isPausePressed)
+            {
+                GameManager.instance.TogglePause(false);
+                _isPausePressed = false;
+            }
+            else
+            {
+                GameManager.instance.TogglePause(true);
+                _isPausePressed = true;
+            }
+        }
     
-    private void DeactivateRenderer()
-    {
-        foreach (var r in _abilityRenderers)
-            r.enabled = false;
+        private void OnMovementInput(InputAction.CallbackContext context)
+        {
+            _moveDirectionInput = context.ReadValue<Vector2>();
+            _moveDirection.x = _moveDirectionInput.x;
+            _moveDirection.z = _moveDirectionInput.y;
+            _isMovementPressed = _moveDirectionInput.x != 0 || _moveDirectionInput.y != 0;
+        }
+    
+        private void OnEnable()
+        {
+            _playerControls.Player.Enable();
+        }
         
-        StartCoroutine(DeactivateAnimation());
+        private void OnDisable()
+        {
+            _playerControls.Player.Disable();
+        }
+        
+        // Allows the transforms of attack points to be shown in the editor for designers. Debug only.
+        private void OnDrawGizmosSelected()
+        {
+            Gizmos.DrawWireSphere(punchPoints[0].position, attackRange);
+            Gizmos.DrawWireSphere(punchPoints[1].position, attackRange);
+            Gizmos.DrawWireSphere(kickPoints[0].position, attackRange);
+            Gizmos.DrawWireSphere(kickPoints[1].position, attackRange);
 
-
+            var currentPosition = transform.position;
+            Gizmos.DrawWireSphere(currentPosition, attackRange * 3);
+            Gizmos.DrawWireSphere(currentPosition, attackRange * 4);
+            Gizmos.DrawWireSphere(currentPosition, attackRange * 8);
+        }
+        public Animator GetAnimator() { return _playerAnimator; }
     }
-    public Animator GetAnimator()
-    {
-        return _playerAnimator;
-    }
-    public HealthBehavior GetHealthBehavior() { return _healthBehavior; }
 }
