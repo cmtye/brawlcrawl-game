@@ -621,6 +621,7 @@ GameObject:
   - component: {fileID: 2865849380466695517}
   - component: {fileID: 2865849380466695519}
   - component: {fileID: 2865849380466695516}
+  - component: {fileID: 4587576737445531123}
   - component: {fileID: 2865849380466695521}
   - component: {fileID: 2865849380466695520}
   - component: {fileID: 2865849380466695514}
@@ -718,6 +719,19 @@ MonoBehaviour:
   counteredAttack: 0
   damageFX: {fileID: 2865849380508979412}
   destroyFX: {fileID: 2865849380991499973}
+--- !u!114 &4587576737445531123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2865849380466695522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b5d3cbeae95bcee489b6b8e5d26a4c0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mass: 3
 --- !u!143 &2865849380466695521
 CharacterController:
   m_ObjectHideFlags: 0

@@ -1,7 +1,8 @@
 using System.Collections;
+using AI_Scripts;
 using UnityEngine;
 
-namespace Player_Scripts
+namespace Character_Scripts
 {
     public class HealthBehavior : MonoBehaviour
     {
@@ -15,6 +16,8 @@ namespace Player_Scripts
         private CharacterMovement _characterMovement;
         private CharacterController _characterController;
         private PlayerController _playerController;
+        private ImpactReceiver _impactReceiver;
+        private AIController _aiController;
 
         // Animations and particle systems added as the objects child and set in editor
         // to show an object getting hit and losing all its health points.
@@ -24,9 +27,11 @@ namespace Player_Scripts
 
         private void Awake()
         {
+            _aiController = GetComponent<AIController>();
             _characterMovement = GetComponent<CharacterMovement>();
             _characterController = GetComponent<CharacterController>();
             _playerController = GetComponent<PlayerController>();
+            _impactReceiver = GetComponent<ImpactReceiver>();
             currentHealth = maxHealth;
         }
         
@@ -34,12 +39,17 @@ namespace Player_Scripts
         {
             // Set variable for retaliation if in counter state.
             if (_characterMovement)
+            {
                 if (_characterMovement.isCountering)
                 {
                     counteredAttack = true;
                     return;
                 }
-            
+                
+                _impactReceiver.AddImpact(
+                    _characterMovement.facingRight ? new Vector3(-5f, 5f, 0) : new Vector3(5f, 5f, 0), 20);
+            }
+
             // Alter game state if the hit object is the player.
             if (_playerController)
             {
@@ -61,9 +71,10 @@ namespace Player_Scripts
         
         private void Die()
         {
-            // If an enemy dies, destroy their in progress ability renders.
+            // If an enemy dies, destroy their in progress components and ability renders.
             if (CompareTag("Enemy"))
             {
+                _aiController.enabled = false;
                 foreach (Transform t in transform)
                 {
                     if (t.name is "Progress" or "Outline")
@@ -77,6 +88,7 @@ namespace Player_Scripts
             // function before destroying them.
             if (_characterMovement)
             {
+                _impactReceiver.enabled = false;
                 _characterController.enabled = false;
                 Invoke(nameof(EmitDestroyedFX), 0.2f);
                 Invoke(nameof(DeactivateRenderer), 0.3f);
@@ -98,6 +110,7 @@ namespace Player_Scripts
             // Send player to game over screen when they die.
             if (_playerController)
             {
+                _playerController.enabled = false;
                 StartCoroutine(TurnOnPause(true));
             }
         }

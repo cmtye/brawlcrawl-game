@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-namespace Player_Scripts
+namespace Character_Scripts
 {
     public class CharacterMovement : MonoBehaviour
     {

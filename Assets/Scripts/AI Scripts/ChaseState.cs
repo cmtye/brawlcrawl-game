@@ -22,7 +22,6 @@ namespace AI_Scripts
             else
             {
                 // Move towards target along the NavMesh
-                Debug.Log("here");
                 controller.GetAnimator().SetBool("isRunning", true);
                 controller.GetNavMeshAgent().destination = GameManager.PlayerTransform.position;
                 controller.GetNavMeshAgent().isStopped = false;

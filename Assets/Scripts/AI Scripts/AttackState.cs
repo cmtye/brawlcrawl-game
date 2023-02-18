@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Player_Scripts;
+using Character_Scripts;
 using UnityEngine;
 
 namespace AI_Scripts

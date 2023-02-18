@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Player_Scripts
+namespace Character_Scripts
 {
     public class PlayerController : MonoBehaviour
     {
@@ -60,7 +60,10 @@ namespace Player_Scripts
         
         private void Update()
         {
-            _characterMovement.Move(_moveDirection);
+            //if (_moveDirection.magnitude > 0)
+            //{
+                _characterMovement.Move(_moveDirection);
+            //}
 
             // Set animator to run Vira's running animation if Vira is not
             // countering and she is in process of moving while not paused.

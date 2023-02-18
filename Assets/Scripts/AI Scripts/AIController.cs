@@ -1,4 +1,4 @@
-using Player_Scripts;
+using Character_Scripts;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -22,8 +22,10 @@ namespace AI_Scripts
         private bool _attackStateCooldown;
         private float _remainingTime;
         private float _countdown;
+        private ImpactReceiver _impactReceiver;
         private NavMeshAgent _navMeshAgent;
         private CharacterMovement _characterMovement;
+        private CharacterController _characterController;
         private Animator _animator;
         private GameObject _outline;
         private GameObject _progress;
@@ -34,15 +36,19 @@ namespace AI_Scripts
         
             foreach (Transform child in transform)
             {
-                if (child.name == "Outline")
+                switch (child.name)
                 {
-                    _outline = child.gameObject;
-                }
-                if (child.name == "Progress")
-                {
-                    _progress = child.gameObject;
+                    case "Outline":
+                        _outline = child.gameObject;
+                        break;
+                    case "Progress":
+                        _progress = child.gameObject;
+                        break;
                 }
             }
+
+            _characterController = GetComponent<CharacterController>();
+            _impactReceiver = GetComponent<ImpactReceiver>();
             _animator = GetComponent<Animator>();
             _navMeshAgent = GetComponent<NavMeshAgent>();
             _characterMovement = GetComponent<CharacterMovement>();
@@ -72,7 +78,8 @@ namespace AI_Scripts
         {
             Gizmos.DrawWireSphere(transform.position, 1.7f);
         }
-
+        
+        public ImpactReceiver GetImpactReceiver() { return _impactReceiver; }
         public ref Vector3 GetProgressVector() { return ref _progressVector; }
         public GameObject GetOutline() { return _outline; }
         public GameObject GetProgress() { return _progress; }

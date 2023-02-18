@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Player_Scripts;
+using Character_Scripts;
 using UI_Scripts;
 using UnityEngine;
 using UnityEngine.SceneManagement;
