@@ -16,10 +16,20 @@ namespace AI_Scripts
             if (controller.GetCountdown() > 0)
             {
 
-                controller.GetProgress().transform.localScale = Vector3.SmoothDamp(controller.GetProgress().transform.localScale,
-                    new Vector3(controller.GetOutline().transform.localScale.x - 4, controller.GetOutline().transform.localScale.y - 4, controller.GetOutline().transform.localScale.z - 4), ref controller.GetProgressVector(), 0.7f);
-                controller.GetNavMeshAgent().isStopped = true;
-                controller.SetCountdown(controller.GetCountdown() - Time.deltaTime);
+                if (controller.GetNavMeshAgent().enabled)
+                {
+                    controller.GetProgress().transform.localScale = Vector3.SmoothDamp(controller.GetProgress().transform.localScale,
+                        new Vector3(controller.GetOutline().transform.localScale.x - 4, controller.GetOutline().transform.localScale.y - 4, controller.GetOutline().transform.localScale.z - 4), ref controller.GetProgressVector(), 0.7f);
+                    controller.GetNavMeshAgent().isStopped = true;
+                    controller.SetCountdown(controller.GetCountdown() - Time.deltaTime);
+                    return;
+                }
+
+                controller.GetProgress().transform.localScale = new Vector3(1,1,1);
+                controller.GetProgress().SetActive(false);
+                controller.GetOutline().SetActive(false);
+                controller.SetCountdown(controller.GetAttackDelay());
+                controller.SetCurrentState(controller.chaseState);
                 return;
             }
         
@@ -36,7 +46,7 @@ namespace AI_Scripts
                 if (hitAlready.Contains(c.name)) return;
             
                 var healthBar = c.GetComponent<HealthBehavior>();
-                if (healthBar) { healthBar.TakeDamage(1); }
+                if (healthBar) { healthBar.TakeDamage(1, controller.transform.position); }
                 hitAlready.Add(c.name);
             }
             controller.GetNavMeshAgent().isStopped = false;

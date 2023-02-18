@@ -60,6 +60,10 @@ public class GameManager : MonoBehaviour
         if (healthUI) _healthUI = healthUI.GetComponent<HealthUIController>();
     }
 
+    public CameraBehavior GetMainCameraBehavior()
+    {
+        return _cameraBehavior;
+    }
     public void SetShakeCamera()
     {
         _cameraBehavior.ShakeCamera();

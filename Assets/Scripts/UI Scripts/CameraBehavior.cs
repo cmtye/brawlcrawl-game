@@ -17,6 +17,8 @@ namespace UI_Scripts
         private Animator _animator;
     
         public Transform target;
+        private static readonly int ZoomedOut = Animator.StringToHash("ZoomedOut");
+        private static readonly int Shake = Animator.StringToHash("Shake");
 
         void Start()
         {
@@ -39,13 +41,19 @@ namespace UI_Scripts
 
         public void ShakeCamera()
         {
-            _animator.SetTrigger("Shake");
+            _animator.SetTrigger(Shake);
         }
         public void ChangeTarget(Transform value, Vector3 newOffset, bool isPlayer)
         {
             target = value;
             offset = isPlayer ? _playerOffset : newOffset;
             _parentCamera.orthographicSize = isPlayer ? 4 : 5;
+        }
+
+        public void SetAnimatorZoom(bool value)
+        {
+            // TODO: Getting hit during zoom gives more shake than out of zoom, resolve somehow
+            _animator.SetBool(ZoomedOut, value);
         }
         private void ViewObstructed()
         {

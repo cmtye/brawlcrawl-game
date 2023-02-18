@@ -211,7 +211,7 @@ namespace Character_Scripts
                 // If the collider has an attached health behavior, deal damage.
                 var healthBar = _hitColliders[i].GetComponent<HealthBehavior>();
                 if (!healthBar) continue;
-                healthBar.TakeDamage(damage);
+                healthBar.TakeDamage(damage, transform.position);
                 alreadyHit.Add(_hitColliders[i].gameObject.GetInstanceID());
             }
         }

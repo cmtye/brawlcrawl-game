@@ -17,10 +17,12 @@ namespace Misc
 
         private int _waveIndex;
         private int _spawnIndex;
-    
+        private static readonly int ZoomedOut = Animator.StringToHash("ZoomedOut");
+
         private void StartArena()
         {
             _waveIndex = 0;
+            GameManager.instance.GetMainCameraBehavior().SetAnimatorZoom(true);
             GameManager.instance.SetCameraTarget(transform, cameraOffset, false);
             lockEntry.SetActive(true);
             lockExit.SetActive(true);
@@ -33,13 +35,13 @@ namespace Misc
             while(_waveIndex < waves.Length)
             {
                 if (constantSpawn) _waveIndex = 0;
-                if (_waveIndex != 0) { yield return new WaitForSeconds(waveDelay); }
 
                 yield return SpawnWaveRoutine();
                 yield return new WaitForSeconds(waveDelay);
                 _waveIndex++;
             }
             GameManager.instance.SetCameraTarget(GameManager.PlayerTransform, Vector3.zero, true);
+            GameManager.instance.GetMainCameraBehavior().SetAnimatorZoom(false);
             lockEntry.SetActive(false);
             lockExit.SetActive(false);
             Destroy(gameObject, 0.2f);

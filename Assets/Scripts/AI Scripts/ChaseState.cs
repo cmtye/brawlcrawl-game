@@ -7,6 +7,8 @@ namespace AI_Scripts
     {
         public override void Execute(AIController controller)
         {
+            if (!controller.GetNavMeshAgent().enabled) return;
+            controller.GetNavMeshAgent().isStopped = false;
             controller.GetNavMeshAgent().stoppingDistance = controller.GetAttackRange();
             var distance = Vector3.Distance(controller.transform.position, GameManager.PlayerTransform.position);
             if (distance <= controller.GetAttackRange())

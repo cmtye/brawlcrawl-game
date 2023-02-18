@@ -175,7 +175,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5d3cbeae95bcee489b6b8e5d26a4c0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mass: 4
+  mass: 2
 --- !u!143 &6570018113437535399
 CharacterController:
   m_ObjectHideFlags: 0

@@ -1,6 +1,7 @@
 using System.Collections;
 using AI_Scripts;
 using UnityEngine;
+using UnityEngine.ProBuilder;
 
 namespace Character_Scripts
 {
@@ -35,7 +36,7 @@ namespace Character_Scripts
             currentHealth = maxHealth;
         }
         
-        public void TakeDamage(int damage)
+        public void TakeDamage(int damage, Vector3 damageSource)
         {
             // Set variable for retaliation if in counter state.
             if (_characterMovement)
@@ -45,11 +46,21 @@ namespace Character_Scripts
                     counteredAttack = true;
                     return;
                 }
-                
-                _impactReceiver.AddImpact(
-                    _characterMovement.facingRight ? new Vector3(-5f, 5f, 0) : new Vector3(5f, 5f, 0), 20);
+
+                if (_aiController)
+                {
+                    _aiController.GetNavMeshAgent().enabled = false;
+                    StartCoroutine(TurnOnAgent());
+                }
+
+                var knockback = (transform.position - damageSource);
+                knockback = knockback.normalized * 5;
+                _impactReceiver.AddImpact(new Vector3(knockback.x, 5f, knockback.z), 20);
             }
 
+            currentHealth -= damage * incomingDamageMultiplier;
+            EmitDamageFX();
+            
             // Alter game state if the hit object is the player.
             if (_playerController)
             {
@@ -61,8 +72,6 @@ namespace Character_Scripts
                 GameManager.instance.SetShakeCamera();
             }
             
-            currentHealth -= damage * incomingDamageMultiplier;
-            EmitDamageFX();
             if (currentHealth <= 0)
             {
                 Die();
@@ -136,6 +145,12 @@ namespace Character_Scripts
                 yield return 0;
             }
             GameManager.instance.TogglePause(value);
+        }
+
+        private IEnumerator TurnOnAgent()
+        {
+            yield return new WaitForSeconds(1f);
+            _aiController.GetNavMeshAgent().enabled = true;
         }
         private void DeactivateRenderer()
         {
