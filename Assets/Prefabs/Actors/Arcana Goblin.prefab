@@ -25,17 +25,17 @@ PrefabInstance:
     - target: {fileID: 6570018113437535384, guid: 575242c62fa56b34e82dcc614999bb81,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -11.63402
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6570018113437535384, guid: 575242c62fa56b34e82dcc614999bb81,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -6.397
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6570018113437535384, guid: 575242c62fa56b34e82dcc614999bb81,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 15.282526
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6570018113437535384, guid: 575242c62fa56b34e82dcc614999bb81,
         type: 3}
@@ -90,7 +90,7 @@ PrefabInstance:
     - target: {fileID: 6570018113437535392, guid: 575242c62fa56b34e82dcc614999bb81,
         type: 3}
       propertyPath: m_Name
-      value: Goblin
+      value: Arcana Goblin
       objectReference: {fileID: 0}
     - target: {fileID: 6570018113437535393, guid: 575242c62fa56b34e82dcc614999bb81,
         type: 3}
