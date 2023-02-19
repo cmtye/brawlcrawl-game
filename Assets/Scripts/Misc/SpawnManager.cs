@@ -17,7 +17,6 @@ namespace Misc
 
         private int _waveIndex;
         private int _spawnIndex;
-        private static readonly int ZoomedOut = Animator.StringToHash("ZoomedOut");
 
         private void StartArena()
         {
