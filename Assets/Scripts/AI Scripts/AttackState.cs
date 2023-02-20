@@ -18,6 +18,7 @@ namespace AI_Scripts
 
                 if (controller.GetNavMeshAgent().enabled)
                 {
+                    controller.GetAnimator().SetBool("chargingAttack", true);
                     controller.GetProgress().transform.localScale = Vector3.SmoothDamp(controller.GetProgress().transform.localScale,
                         new Vector3(controller.GetOutline().transform.localScale.x - 4, controller.GetOutline().transform.localScale.y - 4, controller.GetOutline().transform.localScale.z - 4), ref controller.GetProgressVector(), 0.7f);
                     controller.GetNavMeshAgent().isStopped = true;
@@ -25,6 +26,7 @@ namespace AI_Scripts
                     return;
                 }
 
+                controller.GetAnimator().SetBool("chargingAttack", false);
                 controller.GetProgress().transform.localScale = new Vector3(1,1,1);
                 controller.GetProgress().SetActive(false);
                 controller.GetOutline().SetActive(false);
@@ -32,11 +34,13 @@ namespace AI_Scripts
                 controller.SetCurrentState(controller.chaseState);
                 return;
             }
-        
+            
             controller.GetProgress().transform.localScale = new Vector3(1,1,1);
             controller.GetProgress().SetActive(false);
             controller.GetOutline().SetActive(false);
             var overlaps = Physics.OverlapSphere(controller.transform.position, 1.7f, attackableLayers);
+            controller.GetAnimator().SetTrigger("isAttacking");
+            controller.GetAnimator().SetBool("chargingAttack", false);
             controller.SetAttackStateCooldown(true);
             controller.SetCountdown(controller.GetAttackDelay());
             List<string> hitAlready = new List<string>();

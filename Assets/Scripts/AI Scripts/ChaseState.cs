@@ -13,6 +13,7 @@ namespace AI_Scripts
             var distance = Vector3.Distance(controller.transform.position, GameManager.PlayerTransform.position);
             if (distance <= controller.GetAttackRange())
             {
+                controller.GetAnimator().SetBool("chargingAttack", false);
                 controller.GetAnimator().SetBool("isRunning", false);
                 controller.SetCurrentState(controller.attackState);
                 controller.SetCountdown(controller.GetAttackDelay());

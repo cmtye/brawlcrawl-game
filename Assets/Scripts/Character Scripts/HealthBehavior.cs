@@ -51,6 +51,7 @@ namespace Character_Scripts
                 if (_aiController)
                 {
                     _aiController.GetNavMeshAgent().enabled = false;
+                    _aiController.GetAnimator().SetTrigger(Hurt);
                     StartCoroutine(TurnOnAgent());
                 }
 

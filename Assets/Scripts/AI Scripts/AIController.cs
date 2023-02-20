@@ -62,6 +62,7 @@ namespace AI_Scripts
         {
             if (_attackStateCooldown)
             {
+                _animator.SetBool("attackCooldown", true);
                 if (GetAttackStateRemaining() < attackStateCooldown)
                 {
                     SetAttackStateRemaining(GetAttackStateRemaining() + Time.deltaTime);
@@ -70,6 +71,7 @@ namespace AI_Scripts
             }
 
             _attackStateCooldown = false;
+            _animator.SetBool("attackCooldown", false);
             SetAttackStateRemaining(0);
             currentState.Execute(this);
         }
