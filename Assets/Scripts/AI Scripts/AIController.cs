@@ -78,7 +78,7 @@ namespace AI_Scripts
 
         private void OnDrawGizmosSelected()
         {
-            Gizmos.DrawWireSphere(transform.position, 1.7f);
+            Gizmos.DrawWireSphere(transform.position, 2.2f);
         }
         
         public ImpactReceiver GetImpactReceiver() { return _impactReceiver; }

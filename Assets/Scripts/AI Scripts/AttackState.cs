@@ -38,7 +38,7 @@ namespace AI_Scripts
             controller.GetProgress().transform.localScale = new Vector3(1,1,1);
             controller.GetProgress().SetActive(false);
             controller.GetOutline().SetActive(false);
-            var overlaps = Physics.OverlapSphere(controller.transform.position, 1.7f, attackableLayers);
+            var overlaps = Physics.OverlapSphere(controller.transform.position, 2.2f, attackableLayers);
             controller.GetAnimator().SetTrigger("isAttacking");
             controller.GetAnimator().SetBool("chargingAttack", false);
             controller.SetAttackStateCooldown(true);

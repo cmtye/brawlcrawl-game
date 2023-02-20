@@ -24,6 +24,8 @@ namespace Character_Scripts
         [SerializeField] private List<Transform> kickPoints;
         [SerializeField] private LayerMask attackableLayers;
         public List<int> abilityThresholds;
+        private GameObject _abilityOutline;
+        private Vector3 _outlineVector = Vector3.zero;
         private HealthBehavior _healthBehavior;
         private IEnumerator _counterCoroutine;
         private float _actionDelay;
@@ -37,9 +39,11 @@ namespace Character_Scripts
         private static readonly int IsRunning = Animator.StringToHash("isRunning");
         private static readonly int Punch1 = Animator.StringToHash("Punch");
         private static readonly int Kick1 = Animator.StringToHash("Kick");
+        private AudioSource[] _soundSources;
         
         private void Awake()
         {
+            _soundSources = GetComponents<AudioSource>();
             _characterMovement = GetComponent<CharacterMovement>();
             _characterController = GetComponent<CharacterController>();
             _healthBehavior = GetComponent<HealthBehavior>();
@@ -56,14 +60,48 @@ namespace Character_Scripts
             _playerControls.Player.Ability.performed += _ => Ability();
             _playerControls.Player.Pause.performed += _ => OnPausePressed();
             _isPausePressed = false;
+            
+            foreach (Transform child in transform)
+            {
+                if (child.name == "Outline") {
+                    _abilityOutline = child.gameObject;
+                }
+            }
         }
         
         private void Update()
         {
-            //if (_moveDirection.magnitude > 0)
-            //{
-                _characterMovement.Move(_moveDirection);
-            //}
+            _characterMovement.Move(_moveDirection);
+            if (_isMovementPressed)
+            {
+                if (_characterMovement.isCountering || !_characterController.isGrounded)
+                {
+                    _soundSources[2].Stop();
+                }
+                if (!_soundSources[2].isPlaying && _characterController.isGrounded)
+                {
+                    _soundSources[2].Play();
+                }
+            }
+            else
+            {
+                _soundSources[2].Stop();
+            }
+
+            var currentCombo = GameManager.instance.GetCombo();
+            var localScale = _abilityOutline.transform.localScale;
+            localScale = currentCombo switch
+            {
+                _ when currentCombo >= abilityThresholds[2] => Vector3.SmoothDamp(localScale,
+                    new Vector3(25, 25, 2), ref _outlineVector, 0.55f),
+                _ when currentCombo >= abilityThresholds[1] => Vector3.SmoothDamp(localScale,
+                    new Vector3(14, 14, 2), ref _outlineVector, 0.55f),
+                _ when currentCombo >= abilityThresholds[0] => Vector3.SmoothDamp(localScale,
+                    new Vector3(10, 10, 2), ref _outlineVector, 0.55f),
+                _ => Vector3.SmoothDamp(localScale, new Vector3(0, 0, 0), ref _outlineVector,
+                    0.7f)
+            };
+            _abilityOutline.transform.localScale = localScale;
 
             // Set animator to run Vira's running animation if Vira is not
             // countering and she is in process of moving while not paused.
@@ -99,7 +137,8 @@ namespace Character_Scripts
         
             // Set trigger for player punch animation
             _playerAnimator.SetTrigger(Punch1);
-        
+            _soundSources[0].Play();
+            
             // Create capsule collider instead of sphere for better feeling Z-axis hit registration.
             var overlaps = Physics.OverlapCapsuleNonAlloc(punchPoints[0].position, 
                 punchPoints[1].position, attackRange, _hitColliders, attackableLayers);
@@ -126,7 +165,8 @@ namespace Character_Scripts
         
             // Set trigger for player kick animation
             _playerAnimator.SetTrigger(Kick1);
-        
+            _soundSources[1].Play();
+            
             var overlaps = Physics.OverlapCapsuleNonAlloc(kickPoints[0].position,
                 kickPoints[1].position, attackRange, _hitColliders, attackableLayers);
             if (overlaps >= 1)
@@ -149,6 +189,7 @@ namespace Character_Scripts
             if (_counterCoroutine != null) return;
 
             // Instantiate new counter coroutine and store it.
+            _soundSources[3].Play();
             _counterCoroutine = _characterMovement.Counter();
             StartCoroutine(_counterCoroutine);
             _actionDelay = Time.time + 1f / attackRate;
@@ -159,7 +200,7 @@ namespace Character_Scripts
             // Check if the player is in an actionable state.
             if (!(Time.time >= _actionDelay) || _characterMovement.isCountering || Time.timeScale == 0) 
                 return;
-        
+            
             var currentCombo = GameManager.instance.GetCombo();
             int overlaps;
             switch (currentCombo)
@@ -172,6 +213,7 @@ namespace Character_Scripts
                     overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 8,
                         _hitColliders, attackableLayers);
                     TryDamageCollided(overlaps, attackDamage * 8);
+                    _soundSources[4].Play();
                     break;
             
                 // Gauge is at tier 2.
@@ -182,6 +224,7 @@ namespace Character_Scripts
                     overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 4,
                         _hitColliders, attackableLayers);
                     TryDamageCollided(overlaps, attackDamage * 2);
+                    _soundSources[4].Play();
                     break;
             
                 // Gauge is at tier 1.
@@ -192,6 +235,7 @@ namespace Character_Scripts
                     overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 3,
                         _hitColliders, attackableLayers);
                     TryDamageCollided(overlaps, attackDamage);
+                    _soundSources[4].Play();
                     break;
             
                 // Gauge is at tier 0.
