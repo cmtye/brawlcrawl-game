@@ -131,6 +131,7 @@ namespace Character_Scripts
         public void GainHealth(int healing)
         {
             currentHealth += healing;
+            GameManager.instance.UpdateHealthUI(currentHealth);
             if (currentHealth > maxHealth)
             {
                 currentHealth = maxHealth;

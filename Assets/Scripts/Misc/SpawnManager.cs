@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Misc
@@ -12,6 +13,8 @@ namespace Misc
         [SerializeField] private Vector3 cameraOffset;
         [SerializeField] private GameObject lockEntry;
         [SerializeField] private GameObject lockExit;
+        [SerializeField] private GameObject[] spawnPoints;
+        private List<GameObject>_currentlyInstantiated;
         private Transform _playerReference;
         private bool _started;
 
@@ -20,6 +23,7 @@ namespace Misc
 
         private void StartArena()
         {
+            _currentlyInstantiated = new List<GameObject>();
             _waveIndex = 0;
             GameManager.instance.GetMainCameraBehavior().SetAnimatorZoom(true);
             GameManager.instance.SetCameraTarget(transform, cameraOffset, false);
@@ -39,6 +43,7 @@ namespace Misc
                 yield return new WaitForSeconds(waveDelay);
                 _waveIndex++;
             }
+            
             GameManager.instance.SetCameraTarget(GameManager.PlayerTransform, Vector3.zero, true);
             GameManager.instance.GetMainCameraBehavior().SetAnimatorZoom(false);
             lockEntry.SetActive(false);
@@ -59,10 +64,10 @@ namespace Misc
             while (_spawnIndex < currentWave.enemyPrefabs.Length)
             {
                 var enemyPrefab = currentWave.enemyPrefabs[_spawnIndex];
-                var spawnerTransform = transform;
-                var spawnPoint = spawnerTransform.position;
-                spawnPoint.y -= 2;
-                Instantiate(enemyPrefab, spawnPoint, spawnerTransform.rotation);
+                var index = Random.Range(0, spawnPoints.Length);
+                var spawnPoint = spawnPoints[index].transform;
+                
+                _currentlyInstantiated.Add(Instantiate(enemyPrefab, spawnPoint));
 
                 _spawnIndex++;
                 yield return new WaitForSeconds(spawnDelay);

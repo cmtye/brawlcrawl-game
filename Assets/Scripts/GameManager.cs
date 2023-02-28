@@ -14,6 +14,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int comboIncrement;
     [SerializeField] private Camera cameraObject;
     [SerializeField] private GameObject pauseUI;
+    [SerializeField] private int maxCollectables;
+    [SerializeField] private GameObject endBarrel;
+    [SerializeField] private GameObject trueEndBarrel;
+    private int _collectablesEarned;
     private GaugeUIController _gaugeUI;
     private HealthUIController _healthUI;
     public static GameManager instance;
@@ -39,6 +43,7 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
+        _collectablesEarned = 0;
         _cameraBehavior = cameraObject.GetComponent<CameraBehavior>();
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -124,9 +129,21 @@ public class GameManager : MonoBehaviour
         currentCombo += comboIncrement;
         if (currentCombo > 100) currentCombo = 100;
         _gaugeUI.UpdateGauge(currentCombo);
-
     }
-    
+
+    public void ObtainCollectable()
+    {
+        _collectablesEarned++;
+        _player.GetComponent<HealthBehavior>().GainHealth(1);
+        IncrementCombo();
+        // Secret ending if you get all 15 collectables
+        if (_collectablesEarned >= maxCollectables)
+        {
+            trueEndBarrel.SetActive(true);
+            endBarrel.SetActive(false);
+        }
+        
+    }
     public void SetCombo(int value)
     {
         currentCombo = value;
