@@ -46,7 +46,6 @@ namespace Character_Scripts
         
                     // Translate our 2D movement vector into a 3D vector with gravity.
                     _impact = new Vector3(_impact.x, _impact.y + _gravityVelocity, _impact.z);
-                    Debug.Log(_impact.magnitude);
                     _characterController.Move(_impact * Time.deltaTime);
                 }
             }
