@@ -8,6 +8,7 @@ namespace AI_Scripts
     {
         public override void Execute(AIController controller)
         {
+            controller.GetRunSound().Stop();
             controller.GetNavMeshAgent().isStopped = false;
             controller.GetAnimator().SetBool("isRunning", false);
             controller.GetNavMeshAgent().stoppingDistance = 0.1f;

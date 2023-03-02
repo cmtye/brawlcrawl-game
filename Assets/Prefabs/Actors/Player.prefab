@@ -247,7 +247,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackRate: 2.5
-  attackRange: 0.45
+  attackRange: 0.65
   attackDamage: 2
   punchPoints:
   - {fileID: 2865849380066537144}

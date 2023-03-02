@@ -31,6 +31,9 @@ namespace AI_Scripts
         private GameObject _progress;
         private Vector3 _progressVector = Vector3.zero;
 
+        [SerializeField] private AudioSource attackSound;
+        [SerializeField] private AudioSource runSound;
+
         private void Start()
         {
         
@@ -80,7 +83,9 @@ namespace AI_Scripts
         {
             Gizmos.DrawWireSphere(transform.position, 2.2f);
         }
-        
+
+        public AudioSource GetRunSound() { return runSound; }
+        public AudioSource GetAttackSound() { return attackSound; }
         public ImpactReceiver GetImpactReceiver() { return _impactReceiver; }
         public ref Vector3 GetProgressVector() { return ref _progressVector; }
         public GameObject GetOutline() { return _outline; }

@@ -12,7 +12,13 @@ namespace AI_Scripts
         {
             controller.GetProgress().SetActive(true);
             controller.GetOutline().SetActive(true);
-        
+            controller.GetRunSound().Stop();
+
+            if (!controller.GetAttackSound().isPlaying)
+            {
+                controller.GetAttackSound().Play();
+            }
+
             if (controller.GetCountdown() > 0)
             {
 
@@ -26,6 +32,7 @@ namespace AI_Scripts
                     return;
                 }
 
+                controller.GetAttackSound().Stop();
                 controller.GetAnimator().SetBool("chargingAttack", false);
                 controller.GetProgress().transform.localScale = new Vector3(1,1,1);
                 controller.GetProgress().SetActive(false);
@@ -35,6 +42,7 @@ namespace AI_Scripts
                 return;
             }
             
+            controller.GetAttackSound().Stop();
             controller.GetProgress().transform.localScale = new Vector3(1,1,1);
             controller.GetProgress().SetActive(false);
             controller.GetOutline().SetActive(false);

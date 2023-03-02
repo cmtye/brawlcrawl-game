@@ -24,6 +24,11 @@ namespace AI_Scripts
             }
             else
             {
+                if (!controller.GetRunSound().isPlaying)
+                {
+                    controller.GetRunSound().Play();
+                }
+                
                 // Move towards target along the NavMesh
                 controller.GetAnimator().SetBool("isRunning", true);
                 controller.GetNavMeshAgent().destination = GameManager.PlayerTransform.position;

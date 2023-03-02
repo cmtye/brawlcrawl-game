@@ -137,8 +137,11 @@ namespace Character_Scripts
         
             // Set trigger for player punch animation
             _playerAnimator.SetTrigger(Punch1);
-            _soundSources[0].Play();
-            
+            if( Random.Range(0, 2) == 0 )
+                _soundSources[0].Play();
+            else
+                _soundSources[5].Play();
+
             // Create capsule collider instead of sphere for better feeling Z-axis hit registration.
             var overlaps = Physics.OverlapCapsuleNonAlloc(punchPoints[0].position, 
                 punchPoints[1].position, attackRange, _hitColliders, attackableLayers);
@@ -166,6 +169,7 @@ namespace Character_Scripts
             // Set trigger for player kick animation
             _playerAnimator.SetTrigger(Kick1);
             _soundSources[1].Play();
+            
             
             var overlaps = Physics.OverlapCapsuleNonAlloc(kickPoints[0].position,
                 kickPoints[1].position, attackRange, _hitColliders, attackableLayers);
@@ -210,7 +214,7 @@ namespace Character_Scripts
                     currentCombo -= abilityThresholds[2];
                     GameManager.instance.SetCombo(currentCombo);
                     
-                    overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 8,
+                    overlaps = Physics.OverlapSphereNonAlloc(transform.position, (attackRange-0.2f) * 8,
                         _hitColliders, attackableLayers);
                     TryDamageCollided(overlaps, attackDamage * 8);
                     _soundSources[4].Play();
@@ -221,7 +225,7 @@ namespace Character_Scripts
                     currentCombo -= abilityThresholds[1];
                     GameManager.instance.SetCombo(currentCombo);
                 
-                    overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 4,
+                    overlaps = Physics.OverlapSphereNonAlloc(transform.position, (attackRange-0.2f) * 4,
                         _hitColliders, attackableLayers);
                     TryDamageCollided(overlaps, attackDamage * 2);
                     _soundSources[4].Play();
@@ -232,7 +236,7 @@ namespace Character_Scripts
                     currentCombo -= abilityThresholds[0];
                     GameManager.instance.SetCombo(currentCombo);
                 
-                    overlaps = Physics.OverlapSphereNonAlloc(transform.position, attackRange * 3,
+                    overlaps = Physics.OverlapSphereNonAlloc(transform.position, (attackRange-0.2f) * 3,
                         _hitColliders, attackableLayers);
                     TryDamageCollided(overlaps, attackDamage);
                     _soundSources[4].Play();
@@ -301,9 +305,9 @@ namespace Character_Scripts
             Gizmos.DrawWireSphere(kickPoints[1].position, attackRange);
 
             var currentPosition = transform.position;
-            Gizmos.DrawWireSphere(currentPosition, attackRange * 3);
-            Gizmos.DrawWireSphere(currentPosition, attackRange * 4);
-            Gizmos.DrawWireSphere(currentPosition, attackRange * 8);
+            Gizmos.DrawWireSphere(currentPosition, (attackRange-0.2f) * 3);
+            Gizmos.DrawWireSphere(currentPosition, (attackRange-0.2f) * 4);
+            Gizmos.DrawWireSphere(currentPosition, (attackRange-0.2f) * 8);
         }
         public Animator GetAnimator() { return _playerAnimator; }
     }

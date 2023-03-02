@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int comboIncrement;
     [SerializeField] private Camera cameraObject;
     [SerializeField] private GameObject pauseUI;
+    [SerializeField] private GameObject endUI;
     [SerializeField] private int maxCollectables;
     [SerializeField] private GameObject endBarrel;
     [SerializeField] private GameObject trueEndBarrel;
@@ -124,6 +125,27 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    
+    public void ToggleEnd(bool turnOn)
+    {
+        if (endUI)
+        {
+            if (turnOn)
+            {
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+                endUI.SetActive(true);
+                Time.timeScale = 0;
+            }
+            else
+            {
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+                endUI.SetActive(false);
+                Time.timeScale = 1;
+            }
+        }
+    }
     public void IncrementCombo()
     {
         currentCombo += comboIncrement;
@@ -172,5 +194,10 @@ public class GameManager : MonoBehaviour
     public void ReloadScene()
     { 
         SceneManager.LoadScene(_scene.buildIndex);
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 }

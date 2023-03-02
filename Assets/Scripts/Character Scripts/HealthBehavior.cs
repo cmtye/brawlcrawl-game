@@ -25,6 +25,7 @@ namespace Character_Scripts
         // to show an object getting hit and losing all its health points.
         [SerializeField] private ParticleSystem damageFX;
         [SerializeField] private ParticleSystem destroyFX;
+        [SerializeField] private AudioSource deathSound;
         private static readonly int Hurt = Animator.StringToHash("Hurt");
 
         private void Awake()
@@ -62,7 +63,11 @@ namespace Character_Scripts
 
             currentHealth -= damage * incomingDamageMultiplier;
             EmitDamageFX();
-            
+            if (deathSound)
+            {
+                deathSound.Play();   
+            }
+
             // Alter game state if the hit object is the player.
             if (_playerController)
             {
@@ -122,7 +127,7 @@ namespace Character_Scripts
             if (_playerController)
             {
                 _playerController.enabled = false;
-                StartCoroutine(TurnOnPause(true));
+                StartCoroutine(TurnOnEnd(true));
             }
         }
 
@@ -139,7 +144,7 @@ namespace Character_Scripts
         }
         
         // When a player dies, let destruction particles emit before pausing the game.
-        private IEnumerator TurnOnPause(bool value)
+        private IEnumerator TurnOnEnd(bool value)
         {
             var elapsed = 0.0f;
             while (elapsed < 1f)
@@ -147,7 +152,7 @@ namespace Character_Scripts
                 elapsed += Time.deltaTime;
                 yield return 0;
             }
-            GameManager.instance.TogglePause(value);
+            GameManager.instance.ToggleEnd(value);
         }
 
         private IEnumerator TurnOnAgent()
