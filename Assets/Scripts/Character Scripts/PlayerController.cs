@@ -108,25 +108,21 @@ namespace Character_Scripts
                 case var _ when currentCombo >= abilityThresholds[2]:
                 {
                     attackRate = 3.5f;
-                    Debug.Log("3.5");
                     break;
                 }
                 case var _ when currentCombo >= abilityThresholds[1]:
                 {
                     attackRate = 3f;
-                    Debug.Log("3");
                     break;
                 }
                 case var _ when currentCombo >= abilityThresholds[0]:
                 {
                     attackRate = 2.5f;
-                    Debug.Log("2.5");
                     break;
                 }
                 default:
                 {
                     attackRate = 2f;
-                    Debug.Log("2");
                     break;
                 }
             }
