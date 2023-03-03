@@ -102,7 +102,34 @@ namespace Character_Scripts
                     0.7f)
             };
             _abilityOutline.transform.localScale = localScale;
-
+            
+            switch (currentCombo)
+            {
+                case var _ when currentCombo >= abilityThresholds[2]:
+                {
+                    attackRate = 3.5f;
+                    Debug.Log("3.5");
+                    break;
+                }
+                case var _ when currentCombo >= abilityThresholds[1]:
+                {
+                    attackRate = 3f;
+                    Debug.Log("3");
+                    break;
+                }
+                case var _ when currentCombo >= abilityThresholds[0]:
+                {
+                    attackRate = 2.5f;
+                    Debug.Log("2.5");
+                    break;
+                }
+                default:
+                {
+                    attackRate = 2f;
+                    Debug.Log("2");
+                    break;
+                }
+            }
             // Set animator to run Vira's running animation if Vira is not
             // countering and she is in process of moving while not paused.
             if (Time.timeScale != 0)

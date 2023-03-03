@@ -117,7 +117,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackRange: 1.4
   attackStateCooldown: 1
-  visionRadius: 5
+  visionRadius: 6.5
   wanderRadius: 1
   navMeshMask: -1
   attackDelay: 2

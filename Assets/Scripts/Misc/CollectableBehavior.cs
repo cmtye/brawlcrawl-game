@@ -24,6 +24,11 @@ namespace Misc
             {
                 r.enabled = false;
             }
+
+            foreach (var c in GetComponents<Collider>())
+            {
+                c.enabled = false;
+            }
         }
         private void EmitGrabbedFX() { if (grabbedFX) grabbedFX.Play(); }
     }

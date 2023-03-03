@@ -57,11 +57,16 @@ namespace Misc
                 if (constantSpawn) _waveIndex = 0;
 
                 yield return SpawnWaveRoutine();
-                yield return new WaitForSeconds(waveDelay);
+                if (_waveIndex == waves.Length - 1)
+                {
+                    _doneSpawning = true;
+                }
+                else
+                {
+                    yield return new WaitForSeconds(waveDelay);
+                }
                 _waveIndex++;
             }
-
-            _doneSpawning = true;
         }
     
         private IEnumerator SpawnWaveRoutine()

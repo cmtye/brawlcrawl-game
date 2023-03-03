@@ -15,5 +15,6 @@ public class ZoneAudioChange : MonoBehaviour
         backgroundAudio.clip = newAudio.clip;
         backgroundAudio.Play();
         directionalLight.color = newColor;
+        Destroy(this);
     }
 }

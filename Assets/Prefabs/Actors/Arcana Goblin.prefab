@@ -12,6 +12,11 @@ PrefabInstance:
       propertyPath: mass
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 6570018113092599514, guid: 575242c62fa56b34e82dcc614999bb81,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 2100000, guid: aa53cc47bc7519e42b14e6eb52e9ef84, type: 2}
     - target: {fileID: 6570018113437535384, guid: 575242c62fa56b34e82dcc614999bb81,
         type: 3}
       propertyPath: m_RootOrder
@@ -107,5 +112,10 @@ PrefabInstance:
       propertyPath: attackStateCooldown
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 6570018113978973247, guid: 575242c62fa56b34e82dcc614999bb81,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 2100000, guid: 4d922339a2b8c40459271ca969e0d0e8, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 575242c62fa56b34e82dcc614999bb81, type: 3}

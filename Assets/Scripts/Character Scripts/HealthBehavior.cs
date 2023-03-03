@@ -59,7 +59,7 @@ namespace Character_Scripts
                         
                         var knockback = (transform.position - damageSource);
                         knockback = knockback.normalized * 5;
-                        _impactReceiver.AddImpact(new Vector3(knockback.x, 5f, knockback.z), 20);
+                        _impactReceiver.AddImpact(new Vector3(knockback.x, 5f, knockback.z), 40);
                     }
                 }
             }
