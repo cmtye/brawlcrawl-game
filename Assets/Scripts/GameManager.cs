@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
     private List<int> _playerAbilityThresholds;
     private CameraBehavior _cameraBehavior;
     [SerializeField] private Transform playerTransform;
+    [SerializeField] private AudioSource clickSound;
 
     private bool _isPlayerTransformCached;
     private Scene _scene;

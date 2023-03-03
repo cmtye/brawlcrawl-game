@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class MenuController : MonoBehaviour
 {
     public string _newGameLevel;
+    [SerializeField] private AudioSource clickSound;
 
     public void NewGameDialogYes()
     {
@@ -17,5 +18,4 @@ public class MenuController : MonoBehaviour
     {
         Application.Quit();
     }
- 
 }
