@@ -38,7 +38,7 @@ namespace Character_Scripts
             currentHealth = maxHealth;
         }
         
-        public void TakeDamage(int damage, Vector3 damageSource)
+        public void TakeDamage(int damage, Vector3 damageSource, bool isPunch)
         {
             // Set variable for retaliation if in counter state.
             if (_characterMovement)
@@ -51,17 +51,28 @@ namespace Character_Scripts
 
                 if (_aiController)
                 {
-                    _aiController.GetNavMeshAgent().enabled = false;
-                    _aiController.GetAnimator().SetTrigger(Hurt);
-                    StartCoroutine(TurnOnAgent());
+                    if (!isPunch)
+                    {
+                        _aiController.GetNavMeshAgent().enabled = false;
+                        _aiController.GetAnimator().SetTrigger(Hurt);
+                        StartCoroutine(TurnOnAgent());
+                        
+                        var knockback = (transform.position - damageSource);
+                        knockback = knockback.normalized * 5;
+                        _impactReceiver.AddImpact(new Vector3(knockback.x, 5f, knockback.z), 20);
+                    }
                 }
-
-                var knockback = (transform.position - damageSource);
-                knockback = knockback.normalized * 5;
-                _impactReceiver.AddImpact(new Vector3(knockback.x, 5f, knockback.z), 20);
             }
 
-            currentHealth -= damage * incomingDamageMultiplier;
+            if (isPunch)
+            {
+                currentHealth -= damage * incomingDamageMultiplier;
+            }
+
+            if (!_playerController && !_aiController)
+            {
+                currentHealth -= damage * incomingDamageMultiplier;
+            }
             EmitDamageFX();
             if (deathSound)
             {
@@ -73,6 +84,9 @@ namespace Character_Scripts
             {
                 var animator = _playerController.GetAnimator();
                 animator.SetTrigger(Hurt);
+                var knockback = (transform.position - damageSource);
+                knockback = knockback.normalized * 5;
+                _impactReceiver.AddImpact(new Vector3(knockback.x, 5f, knockback.z), 20);
                 
                 GameManager.instance.ResetCombo();
                 GameManager.instance.UpdateHealthUI(currentHealth);
@@ -91,12 +105,19 @@ namespace Character_Scripts
             if (CompareTag("Enemy"))
             {
                 _aiController.enabled = false;
+                _aiController.GetComponent<CharacterController>().enabled = false;
+                _aiController.GetComponent<CapsuleCollider>().enabled = false;
                 foreach (Transform t in transform)
                 {
                     if (t.name is "Progress" or "Outline")
                     {
                         Destroy(t.gameObject);
                     }
+                }
+
+                foreach (var a in GetComponents<AudioSource>())
+                {
+                    a.enabled = false;
                 }
             }
             

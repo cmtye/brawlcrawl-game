@@ -153,7 +153,7 @@ namespace Character_Scripts
             }
 
             // Iterate through array of enemies the attack overlapped with in method below.
-            TryDamageCollided(overlaps, attackDamage);
+            TryDamageCollided(overlaps, attackDamage, true);
         
             // This method is called after a successful counter, so set variable to false when punch is complete.
             _healthBehavior.counteredAttack = false;
@@ -178,7 +178,7 @@ namespace Character_Scripts
                 GameManager.instance.IncrementCombo();
             }
 
-            TryDamageCollided(overlaps, attackDamage);
+            TryDamageCollided(overlaps, attackDamage, false);
             _healthBehavior.counteredAttack = false;
             _actionDelay = Time.time + 1f / attackRate;
         }
@@ -216,7 +216,7 @@ namespace Character_Scripts
                     
                     overlaps = Physics.OverlapSphereNonAlloc(transform.position, (attackRange-0.2f) * 8,
                         _hitColliders, attackableLayers);
-                    TryDamageCollided(overlaps, attackDamage * 8);
+                    TryDamageCollided(overlaps, attackDamage * 8, true);
                     _soundSources[4].Play();
                     break;
             
@@ -227,7 +227,7 @@ namespace Character_Scripts
                 
                     overlaps = Physics.OverlapSphereNonAlloc(transform.position, (attackRange-0.2f) * 4,
                         _hitColliders, attackableLayers);
-                    TryDamageCollided(overlaps, attackDamage * 2);
+                    TryDamageCollided(overlaps, attackDamage * 2, true);
                     _soundSources[4].Play();
                     break;
             
@@ -238,7 +238,7 @@ namespace Character_Scripts
                 
                     overlaps = Physics.OverlapSphereNonAlloc(transform.position, (attackRange-0.2f) * 3,
                         _hitColliders, attackableLayers);
-                    TryDamageCollided(overlaps, attackDamage);
+                    TryDamageCollided(overlaps, attackDamage, true);
                     _soundSources[4].Play();
                     break;
             
@@ -247,7 +247,7 @@ namespace Character_Scripts
             _actionDelay = Time.time + 1f / attackRate;
         }
 
-        private void TryDamageCollided(int amountHit, int damage)
+        private void TryDamageCollided(int amountHit, int damage, bool isPunch)
         {
             // Make a list to store already struck enemies during this attack.
             var alreadyHit = new List<int>();
@@ -259,7 +259,7 @@ namespace Character_Scripts
                 // If the collider has an attached health behavior, deal damage.
                 var healthBar = _hitColliders[i].GetComponent<HealthBehavior>();
                 if (!healthBar) continue;
-                healthBar.TakeDamage(damage, transform.position);
+                healthBar.TakeDamage(damage, transform.position, isPunch);
                 alreadyHit.Add(_hitColliders[i].gameObject.GetInstanceID());
             }
         }

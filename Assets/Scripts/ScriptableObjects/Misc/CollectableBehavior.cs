@@ -6,6 +6,7 @@ namespace Misc
     public class CollectableBehavior : MonoBehaviour
     {
         [SerializeField] private ParticleSystem grabbedFX;
+        [SerializeField] private AudioSource pickUpSound;
         private void OnTriggerEnter(Collider other)
         {
             if (!other.gameObject.CompareTag("Player")) return;
@@ -13,6 +14,7 @@ namespace Misc
             
             DeactivateRenderer();
             EmitGrabbedFX();
+            pickUpSound.Play();
             Destroy(gameObject, 1f);
         }
         

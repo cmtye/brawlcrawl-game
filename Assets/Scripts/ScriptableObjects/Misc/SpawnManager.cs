@@ -21,6 +21,21 @@ namespace Misc
         private int _waveIndex;
         private int _spawnIndex;
 
+        private void Update()
+        {
+            if (_started)
+            {
+                _currentlyInstantiated.RemoveAll(item => item == null);
+                if (_currentlyInstantiated.Count == 0 && _waveIndex == waves.Length - 1)
+                {
+                    GameManager.instance.SetCameraTarget(GameManager.PlayerTransform, Vector3.zero, true);
+                    GameManager.instance.GetMainCameraBehavior().SetAnimatorZoom(false);
+                    lockEntry.SetActive(false);
+                    lockExit.SetActive(false);
+                    Destroy(gameObject, 0.2f);
+                }
+            }
+        }
         private void StartArena()
         {
             _currentlyInstantiated = new List<GameObject>();
@@ -43,12 +58,6 @@ namespace Misc
                 yield return new WaitForSeconds(waveDelay);
                 _waveIndex++;
             }
-            
-            GameManager.instance.SetCameraTarget(GameManager.PlayerTransform, Vector3.zero, true);
-            GameManager.instance.GetMainCameraBehavior().SetAnimatorZoom(false);
-            lockEntry.SetActive(false);
-            lockExit.SetActive(false);
-            Destroy(gameObject, 0.2f);
         }
     
         private IEnumerator SpawnWaveRoutine()

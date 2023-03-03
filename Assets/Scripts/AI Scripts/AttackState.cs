@@ -58,7 +58,7 @@ namespace AI_Scripts
                 if (hitAlready.Contains(c.name)) return;
             
                 var healthBar = c.GetComponent<HealthBehavior>();
-                if (healthBar) { healthBar.TakeDamage(1, controller.transform.position); }
+                if (healthBar) { healthBar.TakeDamage(1, controller.transform.position, true); }
                 hitAlready.Add(c.name);
             }
             controller.GetNavMeshAgent().isStopped = false;
